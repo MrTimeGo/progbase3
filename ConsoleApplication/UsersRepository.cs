@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
 
-namespace TemporaryUnnamedProject
+namespace ConsoleApplication
 {
     class UsersRepository
     {

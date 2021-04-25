@@ -4,7 +4,7 @@ using System.Xml;
 using System.IO;
 using System.Text;
 
-namespace TemporaryUnnamedProject
+namespace ConsoleApplication
 {
     class Program
     {
