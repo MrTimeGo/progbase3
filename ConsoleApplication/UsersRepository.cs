@@ -120,10 +120,10 @@ namespace ConsoleApplication
         }
         public User[] GetAll()
         {
-            connection.Open();
             long length = GetCount();
             User[] users = new User[length];
 
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM users";
             SqliteDataReader reader = command.ExecuteReader();

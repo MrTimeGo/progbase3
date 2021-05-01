@@ -143,10 +143,10 @@ namespace ConsoleApplication
         }
         public Post[] GetAll()
         {
-            connection.Open();
             long length = GetCount();
             Post[] posts = new Post[length];
 
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM posts";
             SqliteDataReader reader = command.ExecuteReader();
@@ -163,6 +163,7 @@ namespace ConsoleApplication
                     publishTime = reader.GetDateTime(4)
                 };
                 posts[i] = post;
+                i++;
             }
             reader.Close();
             connection.Close();

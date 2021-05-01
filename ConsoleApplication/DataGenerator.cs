@@ -29,7 +29,14 @@ namespace ConsoleApplication
                     publishTime = dateTimes[i],
                     isPinned = false
                 };
-                commentsRepository.Insert(comment);
+                try
+                {
+                    commentsRepository.Insert(comment);
+                }
+                catch
+                {
+                    connection.Close();
+                }
             }
         }
         private static string[] GetCommentText(int n)
@@ -84,8 +91,14 @@ namespace ConsoleApplication
                     text = postTexts[i],
                     publishTime = dateTimes[i]
                 };
-
-                postsRepository.Insert(post);
+                try
+                {
+                    postsRepository.Insert(post);
+                }
+                catch
+                {
+                    connection.Close();
+                }
             }
         }
         private static string[] GetPostTexts(int n)
@@ -115,6 +128,10 @@ namespace ConsoleApplication
             while (reader.Read() && i < n)
             {
                 string postTitle = reader.GetAttribute("Title");
+                if (postTitle == null)
+                {
+                    continue;
+                }
                 if (!repo.PostExists(postTitle))
                 {
                     postTitles[i] = postTitle;
@@ -160,8 +177,14 @@ namespace ConsoleApplication
                     gender = genders[i],
                     createdAt = dateTimes[i]
                 };
-
-                repository.Insert(user);
+                try
+                {
+                    repository.Insert(user);
+                }
+                catch
+                {
+                    connection.Close();
+                }
             }
         }
         private static DateTime[] GetDateTimes(int n, DateTime dateFrom, DateTime dateTo)
@@ -209,6 +232,10 @@ namespace ConsoleApplication
             while (reader.Read() && i < n)
             {
                 string username = reader.GetAttribute("DisplayName");
+                if (username == null)
+                {
+                    continue;
+                }
                 if (!repo.UserExists(username))
                 {
                     usernames[i] = username;
