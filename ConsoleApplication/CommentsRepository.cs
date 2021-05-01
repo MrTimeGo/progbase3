@@ -1,18 +1,19 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 
 namespace ConsoleApplication
 {
     class CommentsRepository
     {
         private SqliteConnection connection;
-        public CommentsRepository(string databasePath)
+        public CommentsRepository(SqliteConnection connection)
         {
-            this.connection = new SqliteConnection($"Data Source = {databasePath}");
-            this.connection.Open();
+            this.connection = connection;
         }
-        public int Insert(Comment comment)
+        public long Insert(Comment comment)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"
             INSERT INTO comments (author_id, post_id, text, publish_time, is_pinned) 
@@ -28,10 +29,13 @@ namespace ConsoleApplication
             command.Parameters.AddWithValue("$is_pinned", comment.isPinned);
 
             long newId = (long)command.ExecuteScalar();
+
+            connection.Close();
             return (int)newId;
         }
-        public Comment FindById(int id)
+        public Comment GetById(long id)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM comments WHERE id = $id";
             command.Parameters.AddWithValue("$id", id);
@@ -42,23 +46,24 @@ namespace ConsoleApplication
             {
                 Comment comment = new Comment
                 {
-                    id = reader.GetInt32(0),
-                    authorId = reader.GetInt32(1),
-                    postId = reader.GetInt32(2),
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
+                    postId = reader.GetInt64(2),
                     text = reader.GetString(3),
                     publishTime = reader.GetDateTime(4),
                     isPinned = reader.GetBoolean(5)
                 };
-
+                reader.Close();
+                connection.Close();
                 return comment;
             }
-            else
-            {
-                throw new Exception("Comment not found");
-            }
+            reader.Close();
+            connection.Close();
+            return null;
         }
         public int EditById(Comment editedComment)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText =
             @"
@@ -74,21 +79,75 @@ namespace ConsoleApplication
             command.Parameters.AddWithValue("$is_pinned", editedComment.isPinned);
 
             int nChanged = command.ExecuteNonQuery();
+            connection.Close();
             return nChanged;
         }
-        public int DeleteById(int id)
+        public int DeleteById(long id)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"DELETE FROM comments WHERE id = $id";
             command.Parameters.AddWithValue("$id", id);
 
             int nChanged = command.ExecuteNonQuery();
 
+            connection.Close();
             return nChanged;
         }
-        public void CloseConnection()
+        public List<Comment> GetByUserId(long userId)
         {
-            this.connection.Close();
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM comments WHERE author_id = $author_id";
+            command.Parameters.AddWithValue("$author_id", userId);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            List<Comment> list = new List<Comment>();
+            while (reader.Read())
+            {
+                Comment comment = new Comment()
+                {
+                    id = reader.GetInt64(0),
+                    authorId = userId,
+                    postId = reader.GetInt64(2),
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4),
+                    isPinned = reader.GetBoolean(5)
+                };
+
+                list.Add(comment);
+            }
+            reader.Close();
+            connection.Close();
+            return list;
         }
+        public List<Comment> GetByPostId(long postId)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM comments WHERE post_id = $post_id";
+            command.Parameters.AddWithValue("$author_id", postId);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            List<Comment> list = new List<Comment>();
+            while (reader.Read())
+            {
+                Comment comment = new Comment()
+                {
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
+                    postId = postId,
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4),
+                    isPinned = reader.GetBoolean(5)
+                };
+
+                list.Add(comment);
+            }
+            reader.Close();
+            connection.Close();
+            return list;
+        }
+
     }
 }

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ConsoleApplication
 {
     class Post
     {
-        public int id;
-        public int authorId;
+        public long id;
+        public long authorId;
         public string title;
         public string text;
         public DateTime publishTime;
+        public List<Comment> comments;
     }
 }

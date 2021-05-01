@@ -8,10 +8,13 @@ namespace ConsoleApplication
 {
     class User
     {
-        public int id;
+        public long id;
         public string username;
         public string password;
         public bool isModerator;
         public string gender;
+        public DateTime createdAt;
+        public List<Post> posts;
+        public List<Comment> comments;
     }
 }

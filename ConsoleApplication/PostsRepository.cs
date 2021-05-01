@@ -1,18 +1,19 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
 
 namespace ConsoleApplication
 {
     class PostsRepository
     {
         private SqliteConnection connection;
-        public PostsRepository(string databasePath)
+        public PostsRepository(SqliteConnection connection)
         {
-            this.connection = new SqliteConnection($"Data Source = {databasePath}");
-            this.connection.Open();
+            this.connection = connection;
         }
-        public int Insert(Post post)
+        public long Insert(Post post)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"
             INSERT INTO posts (author_id, title, text, publish_time) 
@@ -27,10 +28,13 @@ namespace ConsoleApplication
             command.Parameters.AddWithValue("$publish_time", post.publishTime.ToString("o"));
 
             long newId = (long)command.ExecuteScalar();
-            return (int)newId;
+            connection.Close();
+
+            return newId;
         }
-        public Post FindById(int id)
+        public Post GetById(long id)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM posts WHERE id = $id";
             command.Parameters.AddWithValue("$id", id);
@@ -41,22 +45,23 @@ namespace ConsoleApplication
             {
                 Post post = new Post
                 {
-                    id = reader.GetInt32(0),
-                    authorId = reader.GetInt32(1),
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
                     title = reader.GetString(2),
                     text = reader.GetString(3),
                     publishTime = reader.GetDateTime(4)
                 };
-
+                reader.Close();
+                connection.Close();
                 return post;
             }
-            else
-            {
-                throw new Exception("Post not found");
-            }
+            reader.Close();
+            connection.Close();
+            return null;
         }
         public int EditById(Post editedPost)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText =
             @"
@@ -71,21 +76,98 @@ namespace ConsoleApplication
             command.Parameters.AddWithValue("$publish_time", editedPost.publishTime.ToString("o"));
 
             int nChanged = command.ExecuteNonQuery();
+            connection.Close();
             return nChanged;
         }
-        public int DeleteById(int id)
+        public int DeleteById(long id)
         {
+            connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"DELETE FROM posts WHERE id = $id";
             command.Parameters.AddWithValue("$id", id);
 
             int nChanged = command.ExecuteNonQuery();
 
+            connection.Close();
             return nChanged;
         }
-        public void CloseConnection()
+        public List<Post> GetByUserId(long userId)
         {
-            this.connection.Close();
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM posts WHERE author_id = $author_id";
+            command.Parameters.AddWithValue("$author_id", userId);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            List<Post> list = new List<Post>();
+            while(reader.Read())
+            {
+                Post post = new Post
+                {
+                    id = reader.GetInt64(0),
+                    authorId = userId,
+                    title = reader.GetString(2),
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4)
+                };
+
+                list.Add(post);
+            }
+            reader.Close();
+            connection.Close();
+            return list;
+        }
+        public bool PostExists(string title)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM posts WHERE title = $title";
+            command.Parameters.AddWithValue("$title", title);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            bool result = reader.Read();
+
+            reader.Close();
+            connection.Close();
+            return result;
+        }
+        public long GetCount()
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM posts";
+
+            long count = (long)command.ExecuteScalar();
+            connection.Close();
+            return count;
+        }
+        public Post[] GetAll()
+        {
+            connection.Open();
+            long length = GetCount();
+            Post[] posts = new Post[length];
+
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM posts";
+            SqliteDataReader reader = command.ExecuteReader();
+
+            int i = 0;
+            while (reader.Read())
+            {
+                Post post = new Post
+                {
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
+                    title = reader.GetString(2),
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4)
+                };
+                posts[i] = post;
+            }
+            reader.Close();
+            connection.Close();
+
+            return posts;
         }
     }
 }
