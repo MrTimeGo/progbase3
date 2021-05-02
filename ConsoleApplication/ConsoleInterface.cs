@@ -12,20 +12,28 @@ namespace ConsoleApplication
             SqliteConnection connection = new SqliteConnection($"Data Source = {databaseFilepath}");
             while (!exit)
             {
-                string input = ReadInput();
+                try
+                {
+                    string input = ReadInput();
 
-                Arguments args = ParseInput(input);
-                if (args.command == "exit")
-                {
-                    exit = true;
+                    Arguments args = ParseInput(input);
+
+                    if (args.command == "exit")
+                    {
+                        exit = true;
+                    }
+                    else if (args.command == "help")
+                    {
+                        WriteLine(GetHelpString());
+                    }
+                    else if (args.command == "generate")
+                    {
+                        ProcessGenerate(args, connection);
+                    }
                 }
-                else if (args.command == "help")
+                catch (Exception ex)
                 {
-                    WriteLine(GetHelpString());
-                }
-                else if (args.command == "generate")
-                {
-                    ProcessGenerate(args, connection);
+                    Error.WriteLine($"Error: {ex.Message}");
                 }
             }
         }
