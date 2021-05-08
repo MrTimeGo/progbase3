@@ -126,7 +126,7 @@ namespace ConsoleApplication
             connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"SELECT * FROM comments WHERE post_id = $post_id";
-            command.Parameters.AddWithValue("$author_id", postId);
+            command.Parameters.AddWithValue("$post_id", postId);
 
             SqliteDataReader reader = command.ExecuteReader();
             List<Comment> list = new List<Comment>();

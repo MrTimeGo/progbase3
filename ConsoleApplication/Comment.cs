@@ -11,5 +11,11 @@ namespace ConsoleApplication
         public string text;
         public DateTime publishTime;
         public bool isPinned;
+
+        public override string ToString()
+        {
+            string shortText = text.Length <= 60 ? text : text.Substring(0, 57) + "...";
+            return $"[{id}] {shortText.Trim().PadLeft(63)} {publishTime.ToShortDateString()}";
+        }
     }
 }

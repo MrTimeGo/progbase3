@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xml;
-using System.IO;
-using System.Text;
 
 namespace ConsoleApplication
 {
@@ -10,8 +6,20 @@ namespace ConsoleApplication
     {
         static void Main(string[] args)
         {
-            const string databaseFilePath = @".\..\data\database.db";
-            ConsoleInterface.Run(databaseFilePath);
+            const string databaseFilePath = @"C:\Users\Artem\Desktop\KPI\progbase3\data\database.db";
+            //const string databaseFilePath = @".\..\data\database.db";
+            if (args[0] == "generator")
+            {
+                ConsoleInterface.Run(databaseFilePath);
+            }
+            else if (args[0] == "interface")
+            {
+                Terminal.RunInterface(databaseFilePath);
+            }
+            else
+            {
+                Console.WriteLine("Something went wrong");
+            }
         }
     }
 }
