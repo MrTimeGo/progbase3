@@ -6,6 +6,8 @@ namespace ConsoleApplication
 { 
     class PostsListWindow : Window
     {
+        Service service;
+
         List<Post> posts;
         int currentPage;
         ListView page;
@@ -13,9 +15,10 @@ namespace ConsoleApplication
         Button prevPage;
         TextField bottomPageCounter;
         Label pageNumber;
-        public PostsListWindow(List<Post> posts)
+        public PostsListWindow(List<Post> posts, Service service)
         {
             this.posts = posts;
+            this.service = service;
 
             this.Title = "Posts";
             this.X = Pos.Percent(10);
@@ -67,18 +70,44 @@ namespace ConsoleApplication
                 Y = Pos.Top(bottomAllPage),
             };
 
+            Button exit = new Button("Exit")
+            {
+                X = Pos.Left(bottomPageCounter),
+                Y = Pos.Bottom(bottomPageCounter) + 1,
+            };
+
             prevPage.Visible = false;
             prevPage.SetNeedsDisplay();
             nextPage.SetNeedsDisplay();
+
+            page.OpenSelectedItem += OnSeclectedItem;
 
             prevPage.Clicked += OnPrevPageClicked;
             nextPage.Clicked += OnNextPageClicked;
             bottomPageCounter.KeyDown += OnPageCounterClicked;
 
+            exit.Clicked += OnExitClicked;
+
             this.Add(pageNumber, page,
-                prevPage, bottomPageCounter, bottomAllPage, nextPage);
+                prevPage, bottomPageCounter, bottomAllPage, nextPage,
+                exit);
 
             UpdateListView();
+        }
+
+        private void OnSeclectedItem(ListViewItemEventArgs obj)
+        {
+            Post post = (Post)obj.Value;
+            Window selectedInfo = new PostViewWindow(post.id, service);
+            Application.Run(selectedInfo);
+
+            posts[obj.Item] = service.postsRepo.GetById(post.id);
+            page.SetSource(GetPage(currentPage));
+        }
+
+        private void OnExitClicked()
+        {
+            Application.RequestStop();
         }
 
         private void OnPageCounterClicked(KeyEventEventArgs obj)

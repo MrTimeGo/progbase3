@@ -14,7 +14,5 @@ namespace ConsoleApplication
         public bool isModerator;
         public string gender;
         public DateTime createdAt;
-        public List<Post> posts;
-        public List<Comment> comments;
     }
 }

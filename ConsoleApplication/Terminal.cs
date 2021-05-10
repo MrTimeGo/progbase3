@@ -1,30 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using Terminal.Gui;
-using Microsoft.Data.Sqlite;
 
 namespace ConsoleApplication
 {
-    static class Terminal
+    class Terminal
     {
-        static SqliteConnection connection;
         public static void RunInterface(string databaseFilePath)
         {
-            connection = new SqliteConnection($"Data source = {databaseFilePath}");
-            PostsRepository postRepo = new PostsRepository(connection);
-            CommentsRepository commentRepo = new CommentsRepository(connection);
+            Service service = new Service(databaseFilePath);
 
+
+            //Import.Run("./../../file.xml", service);
             Application.Init();
 
-            Toplevel top = Application.Top;
-
-            //Window win = new PostCreationWindow(repo);
-
-            //Window win = new PostsListWindow(new List<Post>(postRepo.GetAll()));
-            Window win = new CommentsListWindow(new List<Comment>(commentRepo.GetByPostId(10)));
+            Window win = new UserCreationWindow(service);
+            //Window win = new PostsListWindow(new List<Post>(service.postsRepo.GetAll()), service);
 
             Application.Run(win);
         }
-
     }
 }

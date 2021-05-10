@@ -11,7 +11,7 @@ namespace ConsoleApplication
         public string title;
         public string text;
         public DateTime publishTime;
-        public List<Comment> comments;
+
 
         public override string ToString()
         {

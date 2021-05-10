@@ -3,7 +3,7 @@
 
 namespace ConsoleApplication
 {
-    class Comment
+    public class Comment
     {
         public long id;
         public long authorId;

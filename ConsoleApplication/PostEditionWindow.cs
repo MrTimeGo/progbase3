@@ -3,24 +3,26 @@ using Terminal.Gui;
 
 namespace ConsoleApplication
 {
-    class PostCreationWindow : Window
+    class PostEditionWindow : Window
     {
-        PostsRepository repository;
+        Service service;
+        Post post;
 
         TextField titleField;
         TextView plainTextView;
-
-        public PostCreationWindow(Service service)
+        public PostEditionWindow(long postId, Service service)
         {
-            this.Title = "New post";
+            this.Title = "Post edition";
             this.X = Pos.Percent(20);
             this.Y = Pos.Percent(20);
             this.Width = Dim.Percent(60);
             this.Height = Dim.Percent(60);
 
-            this.repository = service.postsRepo;
+            this.service = service;
+            this.post = service.postsRepo.GetById(postId);
             Initialize();
         }
+
         private void Initialize()
         {
             Label labelTitle = new Label("Title:")
@@ -29,7 +31,7 @@ namespace ConsoleApplication
                 Y = 1,
                 Height = 1
             };
-            titleField = new TextField()
+            titleField = new TextField(post.title)
             {
                 X = Pos.Left(labelTitle),
                 Y = Pos.Bottom(labelTitle) + 1,
@@ -54,27 +56,28 @@ namespace ConsoleApplication
             {
                 Width = Dim.Fill(),
                 Height = Dim.Fill(),
+                Text = post.text
             };
 
             inputWin.Add(plainTextView);
 
-            Button createNewPost = new Button("Publish")
+            Button confirmEdition = new Button("Confirm")
             {
                 X = Pos.Percent(50) - 12,
                 Y = Pos.Bottom(inputWin) + 2,
             };
             Button cancel = new Button("Cancel")
             {
-                X = Pos.Right(createNewPost) + 3,
-                Y = Pos.Top(createNewPost)
+                X = Pos.Right(confirmEdition) + 3,
+                Y = Pos.Top(confirmEdition)
             };
 
-            createNewPost.Clicked += OnCreateNewPostClicked;
+            confirmEdition.Clicked += OnConfirmClicked;
             cancel.Clicked += OnCancelClicked;
 
             this.Add(labelTitle, titleField,
                 labelPlainText, inputWin,
-                createNewPost, cancel);
+                confirmEdition, cancel);
         }
 
         private void OnCancelClicked()
@@ -82,18 +85,14 @@ namespace ConsoleApplication
             Application.RequestStop();
         }
 
-        private void OnCreateNewPostClicked()
+        private void OnConfirmClicked()
         {
-            Post post = new Post()
-            {
-                title = titleField.Text.ToString(),
-                text = plainTextView.Text.ToString(),
-                publishTime = DateTime.Now
-            };
-            repository.Insert(post);
+            post.title = titleField.Text.ToString();
+            post.text = plainTextView.Text.ToString();
 
-            MessageBox.Query("Info", "Post was published", "Ok");
+            service.postsRepo.EditById(post);
 
+            MessageBox.Query("Info", "Post was edited", "Ok");
             Application.RequestStop();
         }
     }

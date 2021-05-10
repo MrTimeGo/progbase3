@@ -6,6 +6,8 @@ namespace ConsoleApplication
 {
     class CommentsListWindow : Window
     {
+        Service service;
+
         List<Comment> comments;
         int currentPage;
         ListView page;
@@ -13,9 +15,10 @@ namespace ConsoleApplication
         Button prevPage;
         TextField bottomPageCounter;
         Label pageNumber;
-        public CommentsListWindow(List<Comment> posts)
+        public CommentsListWindow(List<Comment> comments, Service service)
         {
-            this.comments = posts;
+            this.comments = comments;
+            this.service = service;
 
             this.Title = "Comments";
             this.X = Pos.Percent(10);
@@ -98,6 +101,13 @@ namespace ConsoleApplication
                 Y = Pos.Top(bottomAllPage),
             };
 
+            Button exit = new Button("Exit")
+            {
+                X = Pos.Left(bottomPageCounter),
+                Y = Pos.Bottom(bottomPageCounter) + 1,
+            };
+
+
             prevPage.Visible = false;
             if (GetNumberOfPages() == 1)
             {
@@ -106,14 +116,34 @@ namespace ConsoleApplication
             prevPage.SetNeedsDisplay();
             nextPage.SetNeedsDisplay();
 
+            page.OpenSelectedItem += OnSelectedItem;
+
             prevPage.Clicked += OnPrevPageClicked;
             nextPage.Clicked += OnNextPageClicked;
             bottomPageCounter.KeyDown += OnPageCounterClicked;
 
+            exit.Clicked += OnExitClicked;
+
             this.Add(pageNumber, page,
-                prevPage, bottomPageCounter, bottomAllPage, nextPage);
+                prevPage, bottomPageCounter, bottomAllPage, nextPage,
+                exit);
 
             UpdateListView();
+        }
+
+        private void OnSelectedItem(ListViewItemEventArgs obj)
+        {
+            Comment comment = (Comment)obj.Value;
+            Window selectedComment = new CommentViewWindow(comment.id, service);
+            Application.Run(selectedComment);
+
+            comments[obj.Item] = service.commentsRepo.GetById(comment.id);
+            page.SetSource(GetPage(currentPage));
+        }
+
+        private void OnExitClicked()
+        {
+            Application.RequestStop();
         }
 
         private void OnPageCounterClicked(KeyEventEventArgs obj)

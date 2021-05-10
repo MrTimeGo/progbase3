@@ -3,20 +3,24 @@ using Terminal.Gui;
 
 namespace ConsoleApplication
 {
-    class CommentCreationWindow : Window
+    class CommentEditionWindow : Window
     {
+        Service service;
+        Comment comment;
+
         TextView textView;
 
-        CommentsRepository repository;
-        public CommentCreationWindow(Service service)
+        public CommentEditionWindow(long commentId, Service service)
         {
-            this.Title = "New Comment";
+            this.service = service;
+            this.comment = service.commentsRepo.GetById(commentId);
+
+            this.Title = "Comment edition";
             this.X = Pos.Percent(20);
             this.Y = Pos.Percent(20);
             this.Width = Dim.Percent(60);
             this.Height = Dim.Percent(60);
 
-            this.repository = service.commentsRepo;
             Initialize();
         }
         private void Initialize()
@@ -38,44 +42,39 @@ namespace ConsoleApplication
             textView = new TextView()
             {
                 Height = Dim.Fill(),
-                Width = Dim.Fill()
+                Width = Dim.Fill(),
+                Text = comment.text
             };
 
             inputWindow.Add(textView);
 
-            Button createNewComment = new Button("Publish")
+            Button confirm = new Button("Publish")
             {
                 X = Pos.Percent(50) - 12,
                 Y = Pos.Bottom(inputWindow) + 2,
             };
-            Button cancelComment = new Button("Cancel")
+            Button cancel = new Button("Cancel")
             {
-                X = Pos.Right(createNewComment) + 3,
-                Y = Pos.Top(createNewComment)
+                X = Pos.Right(confirm) + 3,
+                Y = Pos.Top(confirm)
             };
 
-            createNewComment.Clicked += OnCreateNewCommentClicked;
-            cancelComment.Clicked += OnCancelClicked;
+            confirm.Clicked += OnConfirmClicked;
+            cancel.Clicked += OnCancelClicked;
 
-            this.Add(labelPlainText, inputWindow, createNewComment, cancelComment);
+            this.Add(labelPlainText, inputWindow, confirm, cancel);
         }
 
-        private void OnCancelClicked()
+        private void OnConfirmClicked()
         {
+            comment.text = textView.Text.ToString();
+            service.commentsRepo.EditById(comment);
+
+            MessageBox.Query("Info", "Comment was updated", "Ok");
             Application.RequestStop();
         }
-
-        private void OnCreateNewCommentClicked()
+        private void OnCancelClicked()
         {
-            Comment comment = new Comment()
-            {
-                text = textView.Text.ToString(),
-                publishTime = DateTime.Now
-            };
-            repository.Insert(comment);
-
-            MessageBox.Query("Info", "Comment was added", "Ok");
-
             Application.RequestStop();
         }
     }
