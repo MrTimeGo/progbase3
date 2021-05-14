@@ -2,9 +2,9 @@
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class PostsRepository
+    public class PostsRepository
     {
         private SqliteConnection connection;
         public PostsRepository(SqliteConnection connection)

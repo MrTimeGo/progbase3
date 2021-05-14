@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.Data.Sqlite;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class Service
+    public class Service
     {
         public UsersRepository usersRepo;
         public PostsRepository postsRepo;

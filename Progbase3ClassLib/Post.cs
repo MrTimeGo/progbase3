@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class Post
+    public class Post
     {
         public long id;
         public long authorId;

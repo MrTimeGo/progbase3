@@ -1,9 +1,8 @@
-﻿using System;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class UsersRepository
+    public class UsersRepository
     {
         private SqliteConnection connection;
         public UsersRepository(SqliteConnection connection)

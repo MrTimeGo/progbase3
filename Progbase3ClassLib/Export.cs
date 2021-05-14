@@ -2,9 +2,9 @@
 using System.Xml.Serialization;
 using System.Collections.Generic;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    static class Export
+    public static class Export
     {
         public static void Run(string filePath, long postId, Service service)
         {

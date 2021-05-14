@@ -1,5 +1,6 @@
 ﻿using System;
 using Terminal.Gui;
+using Progbase3ClassLib;
 
 namespace ConsoleApplication
 {

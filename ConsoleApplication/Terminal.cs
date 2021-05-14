@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Progbase3ClassLib;
 using Terminal.Gui;
 
 namespace ConsoleApplication

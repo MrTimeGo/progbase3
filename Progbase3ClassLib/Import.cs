@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Xml;
 using System.Xml.Serialization;
 using System.Collections.Generic;
 using System.IO;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class Import
+    public class Import
     {
         public static void Run(string filePath, Service service)
         {

@@ -2,7 +2,7 @@
 using static System.Console;
 using Microsoft.Data.Sqlite;
 
-namespace ConsoleApplication
+namespace DataGenerator
 {
     static class ConsoleInterface
     {

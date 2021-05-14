@@ -1,10 +1,9 @@
-﻿using System;
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class CommentsRepository
+    public class CommentsRepository
     {
         private SqliteConnection connection;
         public CommentsRepository(SqliteConnection connection)

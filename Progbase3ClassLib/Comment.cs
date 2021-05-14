@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
     public class Comment
     {

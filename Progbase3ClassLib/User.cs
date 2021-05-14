@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ConsoleApplication
+namespace Progbase3ClassLib
 {
-    class User
+    public class User
     {
         public long id;
         public string username;
