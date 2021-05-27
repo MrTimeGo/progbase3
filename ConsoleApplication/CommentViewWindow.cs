@@ -40,7 +40,7 @@ namespace ConsoleApplication
             {
                 authorUsername = author.username;
             }
-            authorName = new Label()
+            authorName = new Label(authorUsername)
             {
                 X = Pos.Percent(10),
                 Y = Pos.Percent(10),
@@ -69,12 +69,20 @@ namespace ConsoleApplication
 
             inputWindow.Add(text);
 
+            Post post = service.postsRepo.GetById(comment.postId);
             Label postLabel = new Label("In post:")
             { 
                 X = Pos.Left(inputWindow),
                 Y = Pos.Bottom(inputWindow) + 1,
             };
-            Post post = service.postsRepo.GetById(comment.postId);
+            CheckBox pinnedCheckbox = new CheckBox("Pinned")
+            {
+                X = Pos.Percent(90) - 8,
+                Y = Pos.Top(postLabel),
+                Checked = comment.isPinned,
+                Visible = post.authorId == loggedUser.id
+            };
+           
             string postTitle = "";
             if (post == null)
             {
@@ -115,14 +123,21 @@ namespace ConsoleApplication
 
             authorName.Clicked += OnAuthorClicked;
             postPreview.Clicked += OnPostPreviewClicked;
+            pinnedCheckbox.Toggled += OnCheckBoxToggled;
 
             edit.Clicked += OnEditClicked;
             delete.Clicked += OnDeleteClicked;
             exit.Clicked += OnExitClicked;
 
             this.Add(authorName, creationTime,
-                inputWindow, postLabel, postPreview,
+                inputWindow, postLabel, pinnedCheckbox, postPreview,
                 edit, delete, exit);
+        }
+
+        private void OnCheckBoxToggled(bool obj)
+        {
+            comment.isPinned = !obj;
+            service.commentsRepo.EditById(comment);
         }
 
         private void OnPostPreviewClicked()

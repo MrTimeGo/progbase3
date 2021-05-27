@@ -50,7 +50,7 @@ namespace ConsoleApplication
 
         private void OnCancelClicked()
         {
-            throw new NotImplementedException();
+            Application.RequestStop();
         }
 
         private void OnPromoteClicked()

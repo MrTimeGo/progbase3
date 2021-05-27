@@ -68,7 +68,7 @@ namespace Progbase3ClassLib
             command.CommandText =
             @"
                 UPDATE comments
-                SET author = $author_id, post_id = $post_id, text = $text, publish_time = $publish_time, is_pinned = $is_pinned
+                SET author_id = $author_id, post_id = $post_id, text = $text, publish_time = $publish_time, is_pinned = $is_pinned
                 WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", editedComment.id);
@@ -191,6 +191,32 @@ namespace Progbase3ClassLib
             reader.Close();
             connection.Close();
             return list;
+        }
+        public Comment GetPinnedComment(long postId)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM comments WHERE post_id = $post_id AND is_pinned = 1";
+            command.Parameters.AddWithValue("$post_id", postId);
+            SqliteDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+                Comment comment = new Comment
+                {
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
+                    postId = reader.GetInt64(2),
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4),
+                    isPinned = reader.GetBoolean(5)
+                };
+                reader.Close();
+                connection.Close();
+                return comment;
+            }
+            reader.Close();
+            connection.Close();
+            return null;
         }
     }
 }

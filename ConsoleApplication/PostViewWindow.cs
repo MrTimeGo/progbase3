@@ -15,6 +15,8 @@ namespace ConsoleApplication
         Label authorName;
         TextView text;
         Label titleLabel;
+        Label pinnedCommentLabel;
+        Label pinnedCommentPreview;
         public PostViewWindow(long postId, Service service, User loggedUser)
         {
             this.post = service.postsRepo.GetById(postId);
@@ -65,7 +67,7 @@ namespace ConsoleApplication
                 X = Pos.Left(titleLabel),
                 Y = Pos.Bottom(authorName),
                 Width = Dim.Percent(80),
-                Height = Dim.Fill(6)
+                Height = Dim.Fill(10)
             };
 
             text = new TextView()
@@ -75,13 +77,33 @@ namespace ConsoleApplication
                 ReadOnly = true,
                 Text = post.text
             };
+            Comment pinnedComment = service.commentsRepo.GetPinnedComment(post.id);
+            pinnedCommentLabel = new Label("Pinned comment:")
+            {
+                X = Pos.Left(inputWindow),
+                Y = Pos.Bottom(inputWindow) + 1,
+            };
+            pinnedCommentPreview = new Label()
+            {
+                X = Pos.Left(pinnedCommentLabel),
+                Y = Pos.Bottom(pinnedCommentLabel) + 1,
+            };
+            if (pinnedComment == null)
+            {
+                pinnedCommentLabel.Visible = false;
+                pinnedCommentPreview.Visible = false;
+            }
+            else
+            {
+                pinnedCommentPreview.Text = pinnedComment.text;
+            }
 
             inputWindow.Add(text);
 
             Button allComments = new Button("View comments")
             {
                 X = Pos.Percent(50) - 19,
-                Y = Pos.Bottom(inputWindow) + 2
+                Y = Pos.Bottom(inputWindow) + 6
             };
             Button newComment = new Button("Write new comment")
             {
@@ -121,13 +143,14 @@ namespace ConsoleApplication
 
             this.Add(titleLabel, authorName, creationTime,
                 inputWindow,
+                pinnedCommentLabel, pinnedCommentPreview,
                 allComments, newComment,
                 edit, exit, delete);
         }
 
         private void OnNewCommentClicked()
         {
-            CommentCreationWindow win = new CommentCreationWindow(service, post.id);
+            CommentCreationWindow win = new CommentCreationWindow(service, post.id, loggedUser);
             Application.Run(win);
         }
 
@@ -183,6 +206,19 @@ namespace ConsoleApplication
             authorName.Text = service.usersRepo.GetById(post.authorId).username;
             titleLabel.Text = post.title;
             text.Text = post.text;
+            Comment pinnedComment = service.commentsRepo.GetPinnedComment(post.id);
+            if (pinnedComment != null)
+            {
+                pinnedCommentPreview.Text = pinnedComment.text;
+                pinnedCommentLabel.Visible = true;
+                pinnedCommentPreview.Visible = true;
+            }
+            else
+            {
+                pinnedCommentLabel.Visible = false;
+                pinnedCommentPreview.Visible = false;
+            }
+            Application.Refresh();
         }
     }
 }
