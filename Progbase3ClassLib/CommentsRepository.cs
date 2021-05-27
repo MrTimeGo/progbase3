@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System;
+using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 
 namespace Progbase3ClassLib
@@ -93,33 +94,6 @@ namespace Progbase3ClassLib
             connection.Close();
             return nChanged;
         }
-        public List<Comment> GetByUserId(long userId)
-        {
-            connection.Open();
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM comments WHERE author_id = $author_id";
-            command.Parameters.AddWithValue("$author_id", userId);
-
-            SqliteDataReader reader = command.ExecuteReader();
-            List<Comment> list = new List<Comment>();
-            while (reader.Read())
-            {
-                Comment comment = new Comment()
-                {
-                    id = reader.GetInt64(0),
-                    authorId = userId,
-                    postId = reader.GetInt64(2),
-                    text = reader.GetString(3),
-                    publishTime = reader.GetDateTime(4),
-                    isPinned = reader.GetBoolean(5)
-                };
-
-                list.Add(comment);
-            }
-            reader.Close();
-            connection.Close();
-            return list;
-        }
         public List<Comment> GetByPostId(long postId)
         {
             connection.Open();
@@ -148,5 +122,75 @@ namespace Progbase3ClassLib
             return list;
         }
 
+        private long GetCount(string searchKeyword, long id, bool isAuthor)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            if (isAuthor)
+            {
+                command.CommandText = @"SELECT COUNT(*) FROM comments WHERE author_id = $author_id AND text LIKE $keyword || '%'";
+                command.Parameters.AddWithValue("$author_id", id);
+            }
+            else
+            {
+                command.CommandText = @"SELECT COUNT(*) FROM comments WHERE post_id = $post_id AND text LIKE $keyword || '%'";
+                command.Parameters.AddWithValue("$post_id", id);
+            }
+            command.Parameters.AddWithValue("$keyword", searchKeyword);
+
+            long count = (long)command.ExecuteScalar();
+            connection.Close();
+            return count;
+        }
+        public int GetTotalPages(string searchKeyword, long id, bool isAuthor)
+        {
+            const int pageSize = 10;
+            return (int)Math.Ceiling(GetCount(searchKeyword, id, isAuthor) / (double)pageSize);
+        }
+        public List<Comment> GetPage(int pageNumber, string searchKeyword, long id, bool isAuthor)
+        {
+            const int pageSize = 10;
+            int numberOfPages = GetTotalPages(searchKeyword, id, isAuthor);
+            if (pageNumber > numberOfPages || pageNumber <= 0)
+            {
+                throw new Exception("Page is not valid");
+            }
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            if (isAuthor)
+            {
+                command.CommandText = @"SELECT * FROM comments WHERE (author_id = $author_id AND text LIKE $keyword || '%') LIMIT $limit OFFSET $offset";
+                command.Parameters.AddWithValue("$author_id", id);
+            }
+            else
+            {
+                command.CommandText = @"SELECT * FROM comments WHERE (post_id = $post_id AND text LIKE $keyword || '%') LIMIT $limit OFFSET $offset";
+                command.Parameters.AddWithValue("$post_id", id);
+            }
+            command.Parameters.AddWithValue("$keyword", searchKeyword);
+            command.Parameters.AddWithValue("$limit", pageSize);
+            command.Parameters.AddWithValue("$offset", (pageNumber - 1) * pageSize);
+
+            SqliteDataReader reader = command.ExecuteReader();
+            List<Comment> list = new List<Comment>();
+
+            while (reader.Read())
+            {
+                Comment comment = new Comment()
+                {
+                    id = reader.GetInt64(0),
+                    authorId = reader.GetInt64(1),
+                    postId = reader.GetInt64(2),
+                    text = reader.GetString(3),
+                    publishTime = reader.GetDateTime(4),
+                    isPinned = reader.GetBoolean(5)
+                };
+
+                list.Add(comment);
+            }
+            reader.Close();
+            connection.Close();
+            return list;
+        }
     }
 }

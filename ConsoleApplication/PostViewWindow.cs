@@ -9,20 +9,22 @@ namespace ConsoleApplication
     {
         Post post;
         Service service;
+        User loggedUser;
+        User author;
 
         Label authorName;
         TextView text;
         Label titleLabel;
-        public PostViewWindow(long postId, Service service)
+        public PostViewWindow(long postId, Service service, User loggedUser)
         {
             this.post = service.postsRepo.GetById(postId);
             this.service = service;
+            this.loggedUser = loggedUser;
 
             this.Title = "Post";
-            this.X = Pos.Percent(20);
-            this.Y = Pos.Percent(20);
-            this.Width = Dim.Percent(60);
-            this.Height = Dim.Percent(60);
+            Y = Pos.Percent(0) + 1;
+            this.Width = Dim.Fill();
+            this.Height = Dim.Fill();
 
             Initialize();
         }
@@ -35,8 +37,18 @@ namespace ConsoleApplication
                 Width = Dim.Percent(80),
                 Height = 3
             };
+            author = service.usersRepo.GetById(post.authorId);
+            string authorUsername;
+            if (author == null)
+            {
+                authorUsername = "DELETED";
+            }
+            else
+            {
+                authorUsername = author.username;
+            }
 
-            authorName = new Label($"By {service.usersRepo.GetById(post.authorId).username}")
+            authorName = new Label($"By {authorUsername}")
             {
                 X = Pos.Left(titleLabel),
                 Y = Pos.Bottom(titleLabel) + 1
@@ -68,27 +80,39 @@ namespace ConsoleApplication
 
             Button allComments = new Button("View comments")
             {
-                X = Pos.Percent(50) - 8,
+                X = Pos.Percent(50) - 19,
                 Y = Pos.Bottom(inputWindow) + 2
             };
-
+            Button newComment = new Button("Write new comment")
+            {
+                X = Pos.Right(allComments) + 3,
+                Y = Pos.Top(allComments)
+            };
             Button edit = new Button("Edit")
             {
                 X = Pos.Percent(50) - 16,
                 Y = Pos.Bottom(allComments) + 1,
             };
-            Button delete = new Button("Delete")
+            Button exit = new Button("Exit")
             {
                 X = Pos.Right(edit) + 3,
                 Y = Pos.Top(edit)
             };
-            Button exit = new Button("Exit")
+            Button delete = new Button("Delete")
             {
-                X = Pos.Right(delete) + 3,
+                X = Pos.Right(exit) + 3,
                 Y = Pos.Top(edit)
             };
 
+
+            if (!loggedUser.isModerator && loggedUser.id != post.authorId)
+            {
+                edit.Visible = false;
+                delete.Visible = false;
+            }
+
             allComments.Clicked += OnAllCommentsClicked;
+            newComment.Clicked += OnNewCommentClicked;
             authorName.Clicked += OnAuthorClicked;
 
             edit.Clicked += OnEditClicked;
@@ -97,21 +121,32 @@ namespace ConsoleApplication
 
             this.Add(titleLabel, authorName, creationTime,
                 inputWindow,
-                allComments,
-                edit, delete, exit);
+                allComments, newComment,
+                edit, exit, delete);
+        }
+
+        private void OnNewCommentClicked()
+        {
+            CommentCreationWindow win = new CommentCreationWindow(service, post.id);
+            Application.Run(win);
         }
 
         private void OnAuthorClicked()
         {
-            Window infoWindow = new UserViewWindow(post.authorId, service);
-            Application.Run(infoWindow);
+            if (author != null)
+            {
+                Window infoWindow = new UserViewWindow(post.authorId, service, loggedUser);
+                Application.Top.Add(infoWindow);
+                Application.RequestStop();
+                Application.Run();
 
-            UpdateWindow();
+                UpdateWindow();
+            }
         }
 
         private void OnExitClicked()
         {
-            Application.RequestStop();
+            Application.Top.Remove(this);
         }
 
         private void OnDeleteClicked()
@@ -135,8 +170,10 @@ namespace ConsoleApplication
 
         private void OnAllCommentsClicked()
         {
-            Window listWindow = new CommentsListWindow(new List<Comment>(service.commentsRepo.GetByPostId(post.id)), service);
-            Application.Run(listWindow);
+            Window listWindow = new CommentsListWindow(false, post.id, service, loggedUser);
+            Application.Top.Add(listWindow);
+            Application.RequestStop();
+            Application.Run();
 
             UpdateWindow();
         }

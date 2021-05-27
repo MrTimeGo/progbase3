@@ -21,13 +21,15 @@ namespace ConsoleApplication
                    new MenuItem("_Exit", "Exit the program", OnExit)
                }),
            });
+            MainWindow win = new MainWindow(service, null);
 
-            Application.Top.Add(menu);
+            Application.Top.Add(menu, win);
 
             Application.Run();
         }
         private static void OnExit()
         {
+            Application.Top.RemoveAll();
             Application.RequestStop();
         }
         private static void OnImport()

@@ -7,8 +7,9 @@ namespace Progbase3ClassLib
         public long id;
         public string username;
         public string password;
+        public DateTime birthDate;
         public bool isModerator;
-        public string gender;
+        public int gender;  // ISO 5218
         public DateTime createdAt;
     }
 }

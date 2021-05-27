@@ -91,7 +91,7 @@ namespace ConsoleApplication
             post.title = titleField.Text.ToString();
             post.text = plainTextView.Text.ToString();
 
-            service.postsRepo.EditById(post);
+            service.postsRepo.Edit(post);
 
             MessageBox.Query("Info", "Post was edited", "Ok");
             Application.RequestStop();

@@ -15,7 +15,7 @@ namespace Progbase3ClassLib
         public override string ToString()
         {
             string shortText = text.Length <= 60 ? text : text.Substring(0, 57) + "...";
-            return $"[{id}] {shortText.Trim().PadLeft(63)} {publishTime.ToShortDateString()}";
+            return $"[{id}] {shortText} {publishTime.ToShortDateString()}";
         }
     }
 }

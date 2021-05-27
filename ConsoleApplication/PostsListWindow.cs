@@ -8,37 +8,52 @@ namespace ConsoleApplication
     class PostsListWindow : Window
     {
         Service service;
+        User loggedUser;
 
-        List<Post> posts;
         int currentPage;
+        int totalPages;
+        string searchKeyword;
+        long userId;
+
+        TextField searchField;
         ListView page;
+        Label notFoundLabel;
         Button nextPage;
         Button prevPage;
         TextField bottomPageCounter;
+        Label bottomAllPage;
         Label pageNumber;
-        public PostsListWindow(List<Post> posts, Service service)
+        public PostsListWindow(long userId, Service service, User loggedUser)
         {
-            this.posts = posts;
             this.service = service;
+            this.loggedUser = loggedUser;
 
-            this.Title = "Posts";
-            this.X = Pos.Percent(10);
-            this.Y = Pos.Percent(10);
-            this.Width = Dim.Percent(80);
-            this.Height = Dim.Percent(80);
-
+            this.userId = userId;
             this.currentPage = 1;
+            this.searchKeyword = "";
+            this.totalPages = service.postsRepo.GetTotalPages(searchKeyword, userId);
 
             Initialize();
         }
         private void Initialize()
         {
-            pageNumber = new Label($"Page {this.currentPage}")
+            this.Title = "Posts";
+            this.X = Pos.Percent(10);
+            this.Y = Pos.Percent(10);
+            this.Width = Dim.Percent(80);
+            this.Height = Dim.Percent(80);
+            pageNumber = new Label()
             {
                 X = Pos.Percent(10),
                 Y = Pos.Percent(10),
                 Height = 1,
                 Width = 10
+            };
+            searchField = new TextField()
+            {
+                X = Pos.Percent(60),
+                Y = Pos.Top(pageNumber),
+                Width = Dim.Percent(30)
             };
             page = new ListView()
             {
@@ -47,19 +62,25 @@ namespace ConsoleApplication
                 Width = 80,
                 Height = 10
             };
+            notFoundLabel = new Label("Found no posts")
+            {
+                X = Pos.Center(),
+                Y = Pos.Center(),
+                Visible = false
+            };
             prevPage = new Button("<-")
             {
                 X = Pos.Right(page) - 20,
                 Y = Pos.Bottom(page) + 2,
             };
-            bottomPageCounter = new TextField(currentPage.ToString())
+            bottomPageCounter = new TextField()
             {
                 X = Pos.Right(prevPage) + 1,
                 Y = Pos.Top(prevPage),
                 Width = 2,
                 Height = Dim.Height(prevPage)
             };
-            Label bottomAllPage = new Label($"/{GetNumberOfPages()}")
+            bottomAllPage = new Label()
             {
                 X = Pos.Right(bottomPageCounter) + 1,
                 Y = Pos.Top(bottomPageCounter),
@@ -76,11 +97,9 @@ namespace ConsoleApplication
                 X = Pos.Left(bottomPageCounter),
                 Y = Pos.Bottom(bottomPageCounter) + 1,
             };
+            UpdateInfo();
 
-            prevPage.Visible = false;
-            prevPage.SetNeedsDisplay();
-            nextPage.SetNeedsDisplay();
-
+            searchField.TextChanging += OnTextChanging;
             page.OpenSelectedItem += OnSeclectedItem;
 
             prevPage.Clicked += OnPrevPageClicked;
@@ -89,26 +108,58 @@ namespace ConsoleApplication
 
             exit.Clicked += OnExitClicked;
 
-            this.Add(pageNumber, page,
+            this.Add(pageNumber, searchField, page, notFoundLabel,
                 prevPage, bottomPageCounter, bottomAllPage, nextPage,
                 exit);
+        }
 
-            UpdateListView();
+        private void OnTextChanging(TextChangingEventArgs obj)
+        {
+            searchKeyword = obj.NewText.ToString();
+            UpdateInfo();
         }
 
         private void OnSeclectedItem(ListViewItemEventArgs obj)
         {
             Post post = (Post)obj.Value;
-            Window selectedInfo = new PostViewWindow(post.id, service);
-            Application.Run(selectedInfo);
+            Window selectedInfo = new PostViewWindow(post.id, service, loggedUser);
+            Application.Top.Add(selectedInfo);
+            Application.RequestStop();
+            Application.Run();
 
-            posts[obj.Item] = service.postsRepo.GetById(post.id);
-            page.SetSource(GetPage(currentPage));
+            UpdateInfo();
         }
 
         private void OnExitClicked()
         {
-            Application.RequestStop();
+            Application.Top.Remove(this);
+        }
+        private void UpdateInfo()
+        {
+            totalPages = service.postsRepo.GetTotalPages(searchKeyword, userId);
+            if (totalPages == 0)
+            {
+                bottomPageCounter.Text = "0";
+                bottomAllPage.Text = "/0";
+                prevPage.Visible = false;
+                nextPage.Visible = false;
+                page.Visible = false;
+                notFoundLabel.Visible = true;
+                Application.Refresh();
+                return;
+            }
+            page.Visible = true;
+            notFoundLabel.Visible = false;
+            prevPage.Visible = currentPage != 1;
+            nextPage.Visible = currentPage != totalPages;
+
+            pageNumber.Text = $"Page {this.currentPage}";
+            bottomPageCounter.Text = currentPage.ToString();
+            bottomAllPage.Text = $"/{totalPages}";
+            Application.Refresh();
+
+            List<Post> source = service.postsRepo.GetPage(currentPage, searchKeyword, userId);
+            page.SetSource(source);
         }
 
         private void OnPageCounterClicked(KeyEventEventArgs obj)
@@ -120,60 +171,25 @@ namespace ConsoleApplication
                     bottomPageCounter.Text = string.Empty;
                     return;
                 }
-                if (number > GetNumberOfPages() || number < 1)
+                if (number > totalPages || number < 1)
                 {
                     bottomPageCounter.Text = string.Empty;
                     return;
                 }
                 currentPage = number;
-                pageNumber.Text = $"Page {currentPage}";
-                prevPage.Visible = currentPage != 1;
-                nextPage.Visible = currentPage != GetNumberOfPages();
-                nextPage.Redraw(nextPage.Frame);
-                prevPage.Redraw(prevPage.Frame);
-                UpdateListView();
+                UpdateInfo();
             }
         }
 
         private void OnNextPageClicked()
         {
             currentPage++;
-            pageNumber.Text = $"Page {currentPage}";
-            bottomPageCounter.Text = currentPage.ToString();
-            UpdateListView();
-            prevPage.Visible = currentPage != 1;
-            nextPage.Visible = currentPage != GetNumberOfPages();
-            nextPage.Redraw(nextPage.Frame);
-            prevPage.Redraw(prevPage.Frame);
+            UpdateInfo();
         }
         private void OnPrevPageClicked()
-        { 
+        {
             currentPage--;
-            pageNumber.Text = $"Page {currentPage}";
-            bottomPageCounter.Text = currentPage.ToString();
-            UpdateListView();
-            prevPage.Visible = currentPage != 1;
-            nextPage.Visible = currentPage != GetNumberOfPages();
-        }
-
-        private void UpdateListView()
-        {
-            page.SetSource(GetPage(currentPage));
-        }
-        private List<Post> GetPage(int n)
-        {
-            const int pageSize = 10;
-            List<Post> page = new List<Post>();
-            for (int i = (n - 1) * pageSize; i < Math.Min(n * pageSize, posts.Count); i++)
-            {
-                page.Add(posts[i]);
-            }
-            return page;
-        }
-        private int GetNumberOfPages()
-        {
-            const int pageSize = 10;
-            return (int)Math.Ceiling(posts.Count / (double)pageSize);
+            UpdateInfo();
         }
     }
 }

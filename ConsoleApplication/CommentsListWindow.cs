@@ -8,18 +8,27 @@ namespace ConsoleApplication
     class CommentsListWindow : Window
     {
         Service service;
+        User loggedUser;
 
-        List<Comment> comments;
         int currentPage;
+        int totalPages;
+        string searchKeyword;
+        long id;
+        bool isAuthor;
+
+
         ListView page;
+        Label notFoundLabel;
+        TextField seachKeywordField;
         Button nextPage;
         Button prevPage;
         TextField bottomPageCounter;
+        Label bottomAllPage;
         Label pageNumber;
-        public CommentsListWindow(List<Comment> comments, Service service)
+        public CommentsListWindow(bool isAuthor, long id, Service service, User loggedUser)
         {
-            this.comments = comments;
             this.service = service;
+            this.loggedUser = loggedUser;
 
             this.Title = "Comments";
             this.X = Pos.Percent(10);
@@ -28,49 +37,28 @@ namespace ConsoleApplication
             this.Height = Dim.Percent(80);
 
             this.currentPage = 1;
+            this.isAuthor = isAuthor;
+            this.id = id;
+            this.searchKeyword = "";
+            this.totalPages = service.commentsRepo.GetTotalPages(searchKeyword, id, isAuthor);
 
             Initialize();
         }
         private void Initialize()
         {
-            Comment pinned = SearchForPinnedComment();
-            if (pinned != null)
+            pageNumber = new Label()
             {
-                Label pinnedInfo = new Label("Pinned comment:")
-                {
-                    X = Pos.Percent(10),
-                    Y = Pos.Percent(10),
-                    Height = 1
-                };
-                Label pinnedLabel = new Label(pinned.ToString())
-                {
-                    X = Pos.Percent(10),
-                    Y = Pos.Bottom(pinnedInfo) + 1,
-                    Height = 1
-                };
-
-                this.Add(pinnedInfo, pinnedLabel);
-
-                pageNumber = new Label($"Page {this.currentPage}")
-                {
-                    X = Pos.Percent(10),
-                    Y = Pos.Bottom(pinnedLabel) + 2,
-                    Height = 1,
-                    Width = 10
-                };
-            }
-            else
+                X = Pos.Percent(10),
+                Y = Pos.Percent(10),
+                Height = 1,
+                Width = 10
+            };
+            seachKeywordField = new TextField()
             {
-                pageNumber = new Label($"Page {this.currentPage}")
-                {
-                    X = Pos.Percent(10),
-                    Y = Pos.Percent(10),
-                    Height = 1,
-                    Width = 10
-                };
-            }
-
-            
+                X = Pos.Percent(60),
+                Y = Pos.Top(pageNumber),
+                Width = Dim.Percent(30)
+            };
             page = new ListView()
             {
                 X = Pos.Percent(50) - 40,
@@ -78,19 +66,24 @@ namespace ConsoleApplication
                 Width = 80,
                 Height = 10
             };
+            notFoundLabel = new Label("Found no comments")
+            {
+                X = Pos.Center(),
+                Y = Pos.Center(),
+            };
             prevPage = new Button("<-")
             {
                 X = Pos.Right(page) - 20,
                 Y = Pos.Bottom(page) + 2,
             };
-            bottomPageCounter = new TextField(currentPage.ToString())
+            bottomPageCounter = new TextField()
             {
                 X = Pos.Right(prevPage) + 1,
                 Y = Pos.Top(prevPage),
                 Width = 2,
                 Height = Dim.Height(prevPage)
             };
-            Label bottomAllPage = new Label($"/{GetNumberOfPages()}")
+            bottomAllPage = new Label()
             {
                 X = Pos.Right(bottomPageCounter) + 1,
                 Y = Pos.Top(bottomPageCounter),
@@ -107,16 +100,9 @@ namespace ConsoleApplication
                 X = Pos.Left(bottomPageCounter),
                 Y = Pos.Bottom(bottomPageCounter) + 1,
             };
+            UpdateInfo();
 
-
-            prevPage.Visible = false;
-            if (GetNumberOfPages() == 1)
-            {
-                nextPage.Visible = false;
-            }
-            prevPage.SetNeedsDisplay();
-            nextPage.SetNeedsDisplay();
-
+            seachKeywordField.TextChanging += OnTextChanging;
             page.OpenSelectedItem += OnSelectedItem;
 
             prevPage.Clicked += OnPrevPageClicked;
@@ -125,26 +111,29 @@ namespace ConsoleApplication
 
             exit.Clicked += OnExitClicked;
 
-            this.Add(pageNumber, page,
+            this.Add(pageNumber,seachKeywordField, notFoundLabel, page,
                 prevPage, bottomPageCounter, bottomAllPage, nextPage,
                 exit);
+        }
 
-            UpdateListView();
+        private void OnTextChanging(TextChangingEventArgs obj)
+        {
+            searchKeyword = obj.NewText.ToString();
+            UpdateInfo();
         }
 
         private void OnSelectedItem(ListViewItemEventArgs obj)
         {
             Comment comment = (Comment)obj.Value;
-            Window selectedComment = new CommentViewWindow(comment.id, service);
+            Window selectedComment = new CommentViewWindow(comment.id, service, loggedUser);
             Application.Run(selectedComment);
 
-            comments[obj.Item] = service.commentsRepo.GetById(comment.id);
-            page.SetSource(GetPage(currentPage));
+            UpdateInfo();
         }
 
         private void OnExitClicked()
         {
-            Application.RequestStop();
+            Application.Top.Remove(this);
         }
 
         private void OnPageCounterClicked(KeyEventEventArgs obj)
@@ -156,71 +145,54 @@ namespace ConsoleApplication
                     bottomPageCounter.Text = string.Empty;
                     return;
                 }
-                if (number > GetNumberOfPages() || number < 1)
+                if (number > totalPages || number < 1)
                 {
                     bottomPageCounter.Text = string.Empty;
                     return;
                 }
                 currentPage = number;
-                pageNumber.Text = $"Page {currentPage}";
-                prevPage.Visible = currentPage != 1;
-                nextPage.Visible = currentPage != GetNumberOfPages();
-                nextPage.Redraw(nextPage.Frame);
-                prevPage.Redraw(prevPage.Frame);
-                UpdateListView();
+                UpdateInfo();
             }
         }
 
         private void OnNextPageClicked()
         {
             currentPage++;
-            pageNumber.Text = $"Page {currentPage}";
-            bottomPageCounter.Text = currentPage.ToString();
-            UpdateListView();
-            prevPage.Visible = currentPage != 1;
-            nextPage.Visible = currentPage != GetNumberOfPages();
-            nextPage.Redraw(nextPage.Frame);
-            prevPage.Redraw(prevPage.Frame);
+            UpdateInfo();
         }
         private void OnPrevPageClicked()
         {
             currentPage--;
-            pageNumber.Text = $"Page {currentPage}";
-            bottomPageCounter.Text = currentPage.ToString();
-            UpdateListView();
-            prevPage.Visible = currentPage != 1;
-            nextPage.Visible = currentPage != GetNumberOfPages();
+            UpdateInfo();
         }
 
-        private void UpdateListView()
+        private void UpdateInfo()
         {
-            page.SetSource(GetPage(currentPage));
-        }
-        private List<Comment> GetPage(int n)
-        {
-            const int pageSize = 10;
-            List<Comment> page = new List<Comment>();
-            for (int i = (n - 1) * pageSize; i < Math.Min(n * pageSize, comments.Count); i++)
+            totalPages = service.commentsRepo.GetTotalPages(searchKeyword, id, isAuthor);
+            if (totalPages == 0)
             {
-                page.Add(comments[i]);
+                bottomPageCounter.Text = "0";
+                bottomAllPage.Text = "/0";
+                prevPage.Visible = false;
+                nextPage.Visible = false;
+                page.Visible = false;
+                notFoundLabel.Visible = true;
+                Application.Refresh();
+                return;
             }
-            return page;
+            page.Visible = true;
+            notFoundLabel.Visible = false;
+            prevPage.Visible = currentPage != 1;
+            nextPage.Visible = currentPage != totalPages;
+
+            pageNumber.Text = $"Page {this.currentPage}";
+            bottomPageCounter.Text = currentPage.ToString();
+            bottomAllPage.Text = $"/{totalPages}";
+            Application.Refresh();
+
+            List<Comment> source = service.commentsRepo.GetPage(currentPage, searchKeyword, id, isAuthor);
+            page.SetSource(source);
         }
-        private int GetNumberOfPages()
-        {
-            const int pageSize = 10;
-            return (int)Math.Ceiling(comments.Count / (double)pageSize);
-        }
-        private Comment SearchForPinnedComment()
-        {
-            foreach(Comment comment in comments)
-            {
-                if (comment.isPinned)
-                {
-                    return comment;
-                }
-            }
-            return null;
-        }
+
     }
 }

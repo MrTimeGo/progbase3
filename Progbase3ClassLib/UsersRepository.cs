@@ -14,8 +14,8 @@ namespace Progbase3ClassLib
             connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = @"
-            INSERT INTO users (username, password, is_moderator, gender, created_at) 
-            VALUES ($username, $password, $is_moderator, $gender, $created_at);
+            INSERT INTO users (username, password, is_moderator, gender, created_at, birth_date) 
+            VALUES ($username, $password, $is_moderator, $gender, $created_at, $birth_date);
  
             SELECT last_insert_rowid();
             ";
@@ -24,7 +24,8 @@ namespace Progbase3ClassLib
             command.Parameters.AddWithValue("$password", user.password);
             command.Parameters.AddWithValue("$is_moderator", user.isModerator);
             command.Parameters.AddWithValue("$gender", user.gender);
-            command.Parameters.AddWithValue("$created_at", user.createdAt);
+            command.Parameters.AddWithValue("$created_at", user.createdAt.ToString("o"));
+            command.Parameters.AddWithValue("$birth_date", user.birthDate.ToString("o"));
 
             long newId = (long)command.ExecuteScalar();
             connection.Close();
@@ -47,8 +48,9 @@ namespace Progbase3ClassLib
                     username = reader.GetString(1),
                     password = reader.GetString(2),
                     isModerator = reader.GetBoolean(3),
-                    gender = reader.GetString(4),
-                    createdAt = reader.GetDateTime(5)
+                    gender = reader.GetInt32(4),
+                    createdAt = reader.GetDateTime(5),
+                    birthDate = reader.GetDateTime(6)
                 };
 
                 reader.Close();
@@ -66,7 +68,7 @@ namespace Progbase3ClassLib
             command.CommandText =
             @"
                 UPDATE users
-                SET username = $new_username, password = $new_password, is_moderator = $new_is_moderator, gender = $gender, created_at = $created_at
+                SET username = $new_username, password = $new_password, is_moderator = $new_is_moderator, gender = $gender, created_at = $created_at, birth_date = $birth_date
                 WHERE id = $id
             ";
             command.Parameters.AddWithValue("$id", editedUser.id);
@@ -75,6 +77,7 @@ namespace Progbase3ClassLib
             command.Parameters.AddWithValue("$new_is_moderator", editedUser.isModerator);
             command.Parameters.AddWithValue("$gender", editedUser.gender);
             command.Parameters.AddWithValue("$created_at", editedUser.createdAt.ToString("o"));
+            command.Parameters.AddWithValue("birth_date", editedUser.birthDate.ToString("o"));
 
             int nChanged = command.ExecuteNonQuery();
             connection.Close();
@@ -136,8 +139,9 @@ namespace Progbase3ClassLib
                     username = reader.GetString(1),
                     password = reader.GetString(2),
                     isModerator = reader.GetBoolean(3),
-                    gender = reader.GetString(4),
-                    createdAt = reader.GetDateTime(5)
+                    gender = reader.GetInt32(4),
+                    createdAt = reader.GetDateTime(5),
+                    birthDate = reader.GetDateTime(6)
                 };
 
                 users[i] = user;
@@ -147,6 +151,36 @@ namespace Progbase3ClassLib
             connection.Close();
 
             return users;
+        }
+        public User GetByUsername(string username)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT * FROM users WHERE username = $username";
+            command.Parameters.AddWithValue("$username", username);
+
+            SqliteDataReader reader = command.ExecuteReader();
+
+            if (reader.Read())
+            {
+                User user = new User
+                {
+                    id = reader.GetInt64(0),
+                    username = reader.GetString(1),
+                    password = reader.GetString(2),
+                    isModerator = reader.GetBoolean(3),
+                    gender = reader.GetInt32(4),
+                    createdAt = reader.GetDateTime(5),
+                    birthDate = reader.GetDateTime(6)
+                };
+
+                reader.Close();
+                connection.Close();
+                return user;
+            }
+            reader.Close();
+            connection.Close();
+            return null;
         }
     }
 }

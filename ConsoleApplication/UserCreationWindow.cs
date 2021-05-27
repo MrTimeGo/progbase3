@@ -9,19 +9,21 @@ namespace ConsoleApplication
         TextField usernameField;
         TextField passwordField;
         TextField confirmedPasswordField;
+        DateField birthDate;
         RadioGroup genderRadioGroup;
 
-        UsersRepository repository;
+        Service service;
 
         public UserCreationWindow(Service service)
         {
+            //this.ColorScheme.Normal = Attribute.Make(Color.Blue, Color.Red);
             this.Title = "Registration";
             this.X = Pos.Percent(20);
             this.Y = Pos.Percent(20);
             this.Width = Dim.Percent(60);
             this.Height = Dim.Percent(60);
 
-            repository = service.usersRepo;
+            this.service = service;
 
             Initialize();
         }
@@ -46,10 +48,15 @@ namespace ConsoleApplication
                 Y = Pos.Bottom(labelPassword) + 1,
                 Height = 1
             };
+            Label labelBirthDate = new Label("Date of birth:")
+            {
+                X = Pos.Left(labelConfirmPassword),
+                Y = Pos.Bottom(labelConfirmPassword) + 1
+            };
             Label labelGender = new Label("Gender:")
             {
                 X = Pos.Left(labelConfirmPassword),
-                Y = Pos.Bottom(labelConfirmPassword) + 1,
+                Y = Pos.Bottom(labelBirthDate) + 1,
                 Height = 1
             };
 
@@ -76,6 +83,11 @@ namespace ConsoleApplication
                 Width = Dim.Width(usernameField),
                 Secret = true
             };
+            birthDate = new DateField()
+            {
+                X = Pos.Left(confirmedPasswordField),
+                Y = Pos.Top(labelBirthDate)
+            };
             genderRadioGroup = new RadioGroup(new NStack.ustring[] { "Male", "Female", "Other" })
             {
                 X = Pos.Left(confirmedPasswordField),
@@ -97,8 +109,8 @@ namespace ConsoleApplication
             createNewUser.Clicked += OnCreateNewUserClicked;
             cancel.Clicked += OnCancelClicked;
 
-            this.Add(labelUsername, labelPassword, labelConfirmPassword, labelGender,
-                usernameField, passwordField, confirmedPasswordField, genderRadioGroup,
+            this.Add(labelUsername, labelPassword, labelConfirmPassword,labelBirthDate, labelGender,
+                usernameField, passwordField, confirmedPasswordField,birthDate, genderRadioGroup,
                 createNewUser, cancel);
         }
         private void OnCancelClicked()
@@ -110,19 +122,22 @@ namespace ConsoleApplication
         {
             if (passwordField.Text == confirmedPasswordField.Text)
             {
-                User user = new User()
+                Authentication auth = new Authentication(service);
+                string username = this.usernameField.Text.ToString();
+                string password = this.passwordField.Text.ToString();
+                DateTime birthDate = this.birthDate.Date;
+                int gender = this.genderRadioGroup.SelectedItem == 2 ? 0 : this.genderRadioGroup.SelectedItem + 1;
+                try
                 {
-                    username = usernameField.Text.ToString(),
-                    password = passwordField.Text.ToString(),
-                    isModerator = false,
-                    gender = genderRadioGroup.RadioLabels[genderRadioGroup.SelectedItem].ToString().ToLower(),
-                    createdAt = DateTime.Now
-                };
-                repository.Insert(user);
+                    auth.Register(username, password, gender, birthDate);
 
-                MessageBox.Query("Info", "User was registered", "Ok");
+                    Application.RequestStop();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.ErrorQuery("Error", ex.Message, "Ok");
+                }
 
-                Application.RequestStop();
             }
             else
             {

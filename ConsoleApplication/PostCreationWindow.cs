@@ -7,11 +7,12 @@ namespace ConsoleApplication
     class PostCreationWindow : Window
     {
         PostsRepository repository;
+        User loggedUser;
 
         TextField titleField;
         TextView plainTextView;
 
-        public PostCreationWindow(Service service)
+        public PostCreationWindow(Service service, User loggedUser)
         {
             this.Title = "New post";
             this.X = Pos.Percent(20);
@@ -20,6 +21,7 @@ namespace ConsoleApplication
             this.Height = Dim.Percent(60);
 
             this.repository = service.postsRepo;
+            this.loggedUser = loggedUser;
             Initialize();
         }
         private void Initialize()
@@ -87,6 +89,7 @@ namespace ConsoleApplication
         {
             Post post = new Post()
             {
+                authorId = loggedUser.id,
                 title = titleField.Text.ToString(),
                 text = plainTextView.Text.ToString(),
                 publishTime = DateTime.Now

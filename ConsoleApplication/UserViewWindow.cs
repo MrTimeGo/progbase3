@@ -9,20 +9,22 @@ namespace ConsoleApplication
     {
         User user;
         Service service;
+        User loggedUser;
 
         TextField usernameField;
         TextField genderField;
+        DateField birthDateField;
 
-        public UserViewWindow(long userId, Service service)
+        public UserViewWindow(long userId, Service service, User loggedUser)
         {
             this.user = service.usersRepo.GetById(userId);
             this.service = service;
+            this.loggedUser = loggedUser;
 
             this.Title = "User Info";
-            this.X = Pos.Percent(20);
-            this.Y = Pos.Percent(20);
-            this.Width = Dim.Percent(60);
-            this.Height = Dim.Percent(60);
+            Y = Pos.Percent(0) + 1;
+            this.Width = Dim.Fill();
+            this.Height = Dim.Fill();
 
             Initialize();
         }
@@ -30,17 +32,25 @@ namespace ConsoleApplication
         {
             Label labelUsername = new Label("Username:")
             {
-                X = Pos.Percent(10),
+                X = Pos.Percent(15),
                 Y = Pos.Percent(50) - 6,
+                Height = 1
+            };
+            Label labelBirthDate = new Label("Date of birth:")
+            {
+                X = Pos.Left(labelUsername),
+                Y = Pos.Bottom(labelUsername) + 1,
                 Height = 1
             };
 
             Label labelGender = new Label("Gender:")
             {
                 X = Pos.Left(labelUsername),
-                Y = Pos.Bottom(labelUsername) + 1,
+                Y = Pos.Bottom(labelBirthDate) + 1,
                 Height = 1
             };
+
+            
 
             Label labelRegisteredAt = new Label("Registration date: ")
             {
@@ -50,24 +60,31 @@ namespace ConsoleApplication
 
             usernameField = new TextField(user.username)
             {
-                X = Pos.Percent(60),
+                X = Pos.Percent(70),
                 Y = Pos.Top(labelUsername),
                 Height = 1,
+                Width = Dim.Percent(20),
                 ReadOnly = true,
-                AutoSize = true
             };
 
-            genderField = new TextField(user.gender)
+            genderField = new TextField(ChooseGender(user.gender))
             {
                 X = Pos.Left(usernameField),
                 Y = Pos.Top(labelGender),
+                Width = Dim.Percent(20),
                 ReadOnly = true,
-                AutoSize = true
+            };
+
+            birthDateField = new DateField(user.birthDate)
+            {
+                X = Pos.Left(usernameField),
+                Y = Pos.Top(labelBirthDate),
+                ReadOnly = true,
             };
 
             TextField registeredAtField = new TextField(user.createdAt.ToShortDateString())
             {
-                X = Pos.Left(genderField),
+                X = Pos.Left(usernameField),
                 Y = Pos.Top(labelRegisteredAt),
                 ReadOnly = true
             };
@@ -88,16 +105,28 @@ namespace ConsoleApplication
                 X = Pos.Percent(50) - 16,
                 Y = Pos.Bottom(allPosts) + 1
             };
-            Button delete = new Button("Delete")
+            Button exit = new Button("Exit")
             {
                 X = Pos.Right(edit) + 3,
                 Y = Pos.Top(edit)
             };
-            Button exit = new Button("Exit")
+            Button delete = new Button("Delete")
             {
-                X = Pos.Right(delete) + 3,
-                Y = Pos.Top(delete)
+                X = Pos.Right(exit) + 3,
+                Y = Pos.Top(exit)
             };
+            Button toMainWindow = new Button("To main window")
+            {
+                X = Pos.Center(),
+                Y = Pos.Bottom(delete) + 1
+            };
+
+            if (user.id != loggedUser.id)
+            {
+                edit.Visible = false;
+                delete.Visible = false;
+            }
+            
 
             allPosts.Clicked += OnAllPostsClicked;
             allComments.Clicked += OnAllCommentsClicked;
@@ -106,31 +135,52 @@ namespace ConsoleApplication
             delete.Clicked += OnDeleteClicked;
             exit.Clicked += OnExitClicked;
 
-            this.Add(labelUsername, labelGender, labelRegisteredAt,
-                usernameField, genderField, registeredAtField,
+            toMainWindow.Clicked += OnMainWinowClicked;
+
+            this.Add(labelUsername, labelBirthDate, labelGender, labelRegisteredAt,
+                usernameField, genderField, birthDateField, registeredAtField,
                 allPosts, allComments,
-                edit, delete, exit);
+                edit, exit, delete, toMainWindow);
         }
 
+        private void OnMainWinowClicked()
+        {
+            MainWindow win = new MainWindow(service, loggedUser);
+            MenuBar menu = Application.Top.MenuBar;
+            Application.Top.RemoveAll();
+            Application.Top.Add(menu, win);
+            Application.RequestStop();
+            Application.Run();
+        }
+
+        private string ChooseGender(int i)
+        {
+            string[] validGenders = new string[] { "other", "male", "female" };
+            return validGenders[i];
+        }
         private void OnAllCommentsClicked()
         {
-            Window allComments = new CommentsListWindow(new List<Comment>(service.commentsRepo.GetByUserId(user.id)), service);
-            Application.Run(allComments);
+            Window allComments = new CommentsListWindow(true, user.id, service, loggedUser);
+            Application.Top.Add(allComments);
+            Application.RequestStop();
+            Application.Run();
 
             UpdateWindow();
         }
 
         private void OnAllPostsClicked()
         {
-            Window allPosts = new PostsListWindow(new List<Post>(service.postsRepo.GetByUserId(user.id)), service);
-            Application.Run(allPosts);
+            Window allPosts = new PostsListWindow(user.id, service, loggedUser);
+            Application.Top.Add(allPosts);
+            Application.RequestStop();
+            Application.Run();
 
             UpdateWindow();
         }
 
         private void OnExitClicked()
         {
-            Application.RequestStop();
+            Application.Top.Remove(this);
         }
 
         private void OnDeleteClicked()
@@ -140,7 +190,19 @@ namespace ConsoleApplication
             {
                 service.usersRepo.DeleteById(user.id);
                 MessageBox.Query("Info", "User was deleted", "Ok");
-                Application.RequestStop();
+                Application.Top.Remove(this);
+                if (user.id == loggedUser.id)
+                {
+                    LoginDialog loginDialog = new LoginDialog(service);
+                    Application.Run(loginDialog);
+                    loggedUser.id = loginDialog.loggedInUser.id;
+                    loggedUser.username = loginDialog.loggedInUser.username;
+                    loggedUser.password = loginDialog.loggedInUser.password;
+                    loggedUser.birthDate = loginDialog.loggedInUser.birthDate;
+                    loggedUser.isModerator = loginDialog.loggedInUser.isModerator;
+                    loggedUser.gender = loginDialog.loggedInUser.gender;
+                    loggedUser.createdAt = loginDialog.loggedInUser.createdAt;
+                }
             }
         }
 
@@ -155,7 +217,18 @@ namespace ConsoleApplication
         {
             user = service.usersRepo.GetById(user.id);
             usernameField.Text = user.username;
-            genderField.Text = user.gender;
+            genderField.Text = ChooseGender(user.gender);
+            birthDateField.Date = user.birthDate;
+            if (user.id == loggedUser.id)
+            {
+                loggedUser.id = user.id;
+                loggedUser.username = user.username;
+                loggedUser.password = user.password;
+                loggedUser.birthDate = user.birthDate;
+                loggedUser.isModerator = user.isModerator;
+                loggedUser.gender = user.gender;
+                loggedUser.createdAt = user.createdAt;
+            }
         }
     }
 }

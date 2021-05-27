@@ -11,8 +11,7 @@ namespace ConsoleApplication
         User user;
 
         TextField usernameField;
-        TextField passwordField;
-        TextField confirmedPasswordField;
+        DateField birthDateField;
         RadioGroup genderRadioGroup;
 
         public UserEditionWindow(long userId, Service service)
@@ -21,10 +20,10 @@ namespace ConsoleApplication
             this.user = service.usersRepo.GetById(userId);
 
             this.Title = "User edition";
-            this.X = Pos.Percent(20);
-            this.Y = Pos.Percent(20);
-            this.Width = Dim.Percent(60);
-            this.Height = Dim.Percent(60);
+            this.X = Pos.Percent(10);
+            this.Y = Pos.Percent(15);
+            this.Width = Dim.Percent(80);
+            this.Height = Dim.Percent(70);
 
             Initialize();
         }
@@ -32,26 +31,19 @@ namespace ConsoleApplication
         {
             Label labelUsername = new Label("Username:")
             {
-                X = Pos.Percent(10),
-                Y = Pos.Percent(50) - 6,
+                X = Pos.Percent(15),
+                Y = Pos.Percent(50) - 5,
                 Height = 1
             };
-            Label labelPassword = new Label("New password:")
+            Label labelBirthDate = new Label("Date of birth:")
             {
                 X = Pos.Left(labelUsername),
-                Y = Pos.Bottom(labelUsername) + 1,
-                Height = 1
-            };
-            Label labelConfirmPassword = new Label("Confirm new password:")
-            {
-                X = Pos.Left(labelPassword),
-                Y = Pos.Bottom(labelPassword) + 1,
-                Height = 1
+                Y = Pos.Bottom(labelUsername) + 1
             };
             Label labelGender = new Label("Gender:")
             {
-                X = Pos.Left(labelConfirmPassword),
-                Y = Pos.Bottom(labelConfirmPassword) + 1,
+                X = Pos.Left(labelUsername),
+                Y = Pos.Bottom(labelBirthDate) + 1,
                 Height = 1
             };
 
@@ -62,34 +54,27 @@ namespace ConsoleApplication
                 Height = 1,
                 Width = Dim.Percent(30)
             };
-            passwordField = new TextField()
+            birthDateField = new DateField(user.birthDate)
             {
                 X = Pos.Left(usernameField),
-                Y = Pos.Top(labelPassword),
-                Height = 1,
-                Width = Dim.Width(usernameField),
-                Secret = true
-            };
-            confirmedPasswordField = new TextField()
-            {
-                X = Pos.Left(usernameField),
-                Y = Pos.Top(labelConfirmPassword),
-                Height = 1,
-                Width = Dim.Width(usernameField),
-                Secret = true
+                Y = Pos.Top(labelBirthDate),
             };
             genderRadioGroup = new RadioGroup(new NStack.ustring[] { "Male", "Female", "Other" })
             {
-                X = Pos.Left(confirmedPasswordField),
+                X = Pos.Left(usernameField),
                 Y = Pos.Top(labelGender),
+                SelectedItem = user.gender + 1 > 2 ? 0 : user.gender + 1
             };
 
-            genderRadioGroup.SelectedItem = FindIndex(user.gender);
-
+            Button passwordChange = new Button("Change password")
+            {
+                X = Pos.Percent(50) - 9,
+                Y = Pos.Bottom(genderRadioGroup) + 2,
+            };
             Button confirmEdition = new Button("Confirm")
             {
                 X = Pos.Percent(50) - 12,
-                Y = Pos.Bottom(genderRadioGroup) + 2,
+                Y = Pos.Bottom(passwordChange) + 1,
             };
             Button cancel = new Button("Cancel")
             {
@@ -97,13 +82,21 @@ namespace ConsoleApplication
                 Y = Pos.Top(confirmEdition)
             };
 
+            passwordChange.Clicked += OnPasswordChangeClicked;
             confirmEdition.Clicked += OnConfirmClicked;
             cancel.Clicked += OnCancelClicked;
-            
 
-            this.Add(labelUsername, labelPassword, labelConfirmPassword, labelGender,
-                usernameField, passwordField, confirmedPasswordField, genderRadioGroup,
-                confirmEdition, cancel);
+            this.Add(labelUsername, labelBirthDate, labelGender,
+                usernameField, birthDateField, genderRadioGroup,
+                passwordChange, confirmEdition, cancel);
+        }
+
+        private void OnPasswordChangeClicked()
+        {
+            ChangePasswordDialog passwordChange = new ChangePasswordDialog();
+            Application.Run(passwordChange);
+
+            user.password = passwordChange.password.Text.ToString();
         }
 
         private void OnCancelClicked()
@@ -113,36 +106,73 @@ namespace ConsoleApplication
 
         private void OnConfirmClicked()
         {
-            if (passwordField.Text == confirmedPasswordField.Text)
+            user.username = usernameField.Text.ToString();
+            user.gender = genderRadioGroup.SelectedItem + 1 > 2 ? 0 : genderRadioGroup.SelectedItem + 1;
+            user.birthDate = birthDateField.Date;
+
+            service.usersRepo.Edit(user);
+
+            MessageBox.Query("Info", "User was edited", "Ok");
+
+            Application.RequestStop();
+
+        }
+        class ChangePasswordDialog : Dialog
+        {
+            public TextField password;
+            public ChangePasswordDialog()
             {
-                user.username = usernameField.Text.ToString();
-                if (passwordField.Text.ToString() != null)
+                X = Pos.Center();
+                Y = Pos.Center();
+                Height = 9;
+                Width = 40;
+                Title = "Change password";
+
+                Label lableNewPassword = new Label("Enter new password:")
                 {
-                    user.password = passwordField.Text.ToString();
-                }
-                user.gender = genderRadioGroup.RadioLabels[genderRadioGroup.SelectedItem].ToString().ToLower();
+                    X = 3,
+                    Y = 1
+                };
+                password = new TextField()
+                {
+                    X = Pos.Left(lableNewPassword),
+                    Y = Pos.Bottom(lableNewPassword) + 1,
+                    Secret = true,
+                    Width = 34
+                };
+                Button confirm = new Button("Confirm")
+                {
+                    X = Pos.Percent(50) - 10,
+                    Y = Pos.Bottom(password) + 2,
+                };
+                Button cancel = new Button("Cancel")
+                {
+                    X = Pos.Right(confirm) + 3,
+                    Y = Pos.Top(confirm)
+                };
 
-                service.usersRepo.Edit(user);
+                confirm.Clicked += OnConfirmClicked;
+                cancel.Clicked += OnCancelClicked;
 
-                MessageBox.Query("Info", "User was edited", "Ok");
+                this.Add(lableNewPassword, password, confirm, cancel);
+            }
 
+            private void OnCancelClicked()
+            {
                 Application.RequestStop();
             }
-            else
-            {
-                MessageBox.ErrorQuery("Error", "Password mismatch", "Ok");
-            }
-        }
 
-        private int FindIndex(string item)
-        {
-            string[] genders = new string[] { "male", "female", "other" };
-            for (int i = 0; i < genders.Length; i++)
+            private void OnConfirmClicked()
             {
-                if (item == genders[i])
-                    return i;
+                if (password.Text.Length < 8)
+                {
+                    MessageBox.ErrorQuery("Error", "Password length should be more than 7.", "Ok");
+                }
+                else
+                {
+                    Application.RequestStop();
+                }
             }
-            return -1;
         }
     }
 }

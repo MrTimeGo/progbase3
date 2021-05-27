@@ -165,8 +165,9 @@ namespace DataGenerator
 
             string[] usernames = GetUsernames(number, repository);
             string[] passwords = GetPasswords(number);
-            string[] genders = GetGenders(number);
+            int[] genders = GetGenders(number);
             DateTime[] dateTimes = GetDateTimes(number, dateFrom, dateTo);
+            DateTime[] birthDates = GetDateTimes(number, new DateTime(1960,1,1), DateTime.Now);
 
             for (int i = 0; i < number; i++)
             {
@@ -176,7 +177,8 @@ namespace DataGenerator
                     password = passwords[i],
                     isModerator = false,
                     gender = genders[i],
-                    createdAt = dateTimes[i]
+                    createdAt = dateTimes[i],
+                    birthDate = birthDates[i]
                 };
                 try
                 {
@@ -200,15 +202,14 @@ namespace DataGenerator
             }
             return dateTimes;
         }
-        private static string[] GetGenders(int n)
+        private static int[] GetGenders(int n)
         {
-            string[] validGenders = new string[] { "male", "female", "other"};
             Random rnd = new Random();
 
-            string[] genders = new string[n];
+            int[] genders = new int[n];
             for (int i = 0; i < genders.Length; i++)
             {
-                genders[i] = validGenders[rnd.Next(0, 3)];
+                genders[i] = rnd.Next(0, 4);
             }
             return genders;
         }

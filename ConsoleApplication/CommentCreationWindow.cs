@@ -9,7 +9,8 @@ namespace ConsoleApplication
         TextView textView;
 
         CommentsRepository repository;
-        public CommentCreationWindow(Service service)
+        long postId;
+        public CommentCreationWindow(Service service, long postId)
         {
             this.Title = "New Comment";
             this.X = Pos.Percent(20);
@@ -18,6 +19,7 @@ namespace ConsoleApplication
             this.Height = Dim.Percent(60);
 
             this.repository = service.commentsRepo;
+            this.postId = postId;
             Initialize();
         }
         private void Initialize()
@@ -70,6 +72,7 @@ namespace ConsoleApplication
         {
             Comment comment = new Comment()
             {
+                postId = postId,
                 text = textView.Text.ToString(),
                 publishTime = DateTime.Now
             };

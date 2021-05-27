@@ -8,14 +8,17 @@ namespace ConsoleApplication
     {
         Comment comment;
         Service service;
+        User loggedUser;
+        User author;
 
         Label authorName;
         Label postPreview;
         Label text;
-        public CommentViewWindow(long commentId, Service service)
+        public CommentViewWindow(long commentId, Service service, User loggedUser)
         {
             this.comment = service.commentsRepo.GetById(commentId);
             this.service = service;
+            this.loggedUser = loggedUser;
 
             this.Title = "Comment";
             this.X = Pos.Percent(20);
@@ -27,7 +30,17 @@ namespace ConsoleApplication
         }
         private void Initialize()
         {
-            authorName = new Label(service.usersRepo.GetById(comment.authorId).username)
+            author = service.usersRepo.GetById(comment.authorId);
+            string authorUsername;
+            if (author == null)
+            {
+                authorUsername = "DELETED";
+            }
+            else
+            {
+                authorUsername = author.username;
+            }
+            authorName = new Label()
             {
                 X = Pos.Percent(10),
                 Y = Pos.Percent(10),
@@ -62,7 +75,17 @@ namespace ConsoleApplication
                 Y = Pos.Bottom(inputWindow) + 1,
             };
             Post post = service.postsRepo.GetById(comment.postId);
-            postPreview = new Label(service.postsRepo.GetById(comment.postId).ToString())
+            string postTitle = "";
+            if (post == null)
+            {
+                postTitle = "DELETED";
+            }
+            else
+            {
+                string shortTitle = post.title.Length <= 30 ? post.title : post.title.Substring(0, 27) + "...";
+                postTitle = $"[{post.id}] {shortTitle}";
+            }
+            postPreview = new Label(postTitle)
             {
                 X = Pos.Left(postLabel),
                 Y = Pos.Bottom(postLabel) + 1,
@@ -84,6 +107,12 @@ namespace ConsoleApplication
                 Y = Pos.Top(edit)
             };
 
+            if (!loggedUser.isModerator && loggedUser.id != comment.authorId)
+            {
+                edit.Visible = false;
+                delete.Visible = false;
+            }
+
             authorName.Clicked += OnAuthorClicked;
             postPreview.Clicked += OnPostPreviewClicked;
 
@@ -98,18 +127,27 @@ namespace ConsoleApplication
 
         private void OnPostPreviewClicked()
         {
-            Window postInfo = new PostViewWindow(comment.postId, service);
-            Application.Run(postInfo);
+            Window postInfo = new PostViewWindow(comment.postId, service, loggedUser);
+            Application.RequestStop();
+            Application.Top.Add(postInfo);
+            Application.RequestStop();
+            Application.Run();
 
             UpdateWindow();
         }
 
         private void OnAuthorClicked()
         {
-            Window userInfo = new UserViewWindow(comment.authorId, service);
-            Application.Run(userInfo);
+            if (author != null)
+            {
+                Window userInfo = new UserViewWindow(comment.authorId, service, loggedUser);
+                Application.RequestStop();
+                Application.Top.Add(userInfo);
+                Application.RequestStop();
+                Application.Run();
 
-            UpdateWindow();
+                UpdateWindow();
+            }
         }
 
         private void OnExitClicked()
