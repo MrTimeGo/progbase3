@@ -140,12 +140,18 @@ namespace ConsoleApplication
             edit.Clicked += OnEditClicked;
             delete.Clicked += OnDeleteClicked;
             exit.Clicked += OnExitClicked;
+            this.Enter += UpdateInfo;
 
             this.Add(titleLabel, authorName, creationTime,
                 inputWindow,
                 pinnedCommentLabel, pinnedCommentPreview,
                 allComments, newComment,
                 edit, exit, delete);
+        }
+
+        private void UpdateInfo(FocusEventArgs obj)
+        {
+            UpdateWindow();
         }
 
         private void OnNewCommentClicked()
@@ -179,7 +185,7 @@ namespace ConsoleApplication
             {
                 service.postsRepo.DeleteById(post.id);
                 MessageBox.Query("Info", "Post was deleted", "Ok");
-                Application.RequestStop();
+                Application.Top.Remove(this);
             }
         }
 

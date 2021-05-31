@@ -106,6 +106,21 @@ namespace ConsoleApplication
 
         private void OnConfirmClicked()
         {
+            if (usernameField.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Error", "Username should be not empty", "Ok");
+                return;
+            }
+            if (user.username != usernameField.Text.ToString() && service.usersRepo.UserExists(usernameField.Text.ToString()))
+            {
+                MessageBox.ErrorQuery("Error", "Username is busy", "Ok");
+                return;
+            }
+            if ((DateTime.Now - birthDateField.Date).TotalDays < 12 * 365)
+            {
+                MessageBox.ErrorQuery("Error", "User age should be 12+", "Ok");
+                return;
+            }
             user.username = usernameField.Text.ToString();
             user.gender = genderRadioGroup.SelectedItem + 1 > 2 ? 0 : genderRadioGroup.SelectedItem + 1;
             user.birthDate = birthDateField.Date;
@@ -115,7 +130,6 @@ namespace ConsoleApplication
             MessageBox.Query("Info", "User was edited", "Ok");
 
             Application.RequestStop();
-
         }
         class ChangePasswordDialog : Dialog
         {

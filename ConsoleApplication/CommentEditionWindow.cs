@@ -49,7 +49,7 @@ namespace ConsoleApplication
 
             inputWindow.Add(textView);
 
-            Button confirm = new Button("Publish")
+            Button confirm = new Button("Edit")
             {
                 X = Pos.Percent(50) - 12,
                 Y = Pos.Bottom(inputWindow) + 2,
@@ -68,6 +68,11 @@ namespace ConsoleApplication
 
         private void OnConfirmClicked()
         {
+            if (textView.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Error", "Comment should not be empty", "Ok");
+                return;
+            }
             comment.text = textView.Text.ToString();
             service.commentsRepo.EditById(comment);
 

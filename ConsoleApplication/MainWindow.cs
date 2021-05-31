@@ -18,13 +18,13 @@ namespace ConsoleApplication
         {
             this.service = service;
             this.logginedUser = logginedUser;
-            this.Title = "Main Window";
+            this.Title = "BookFace";
             Y = Pos.Percent(0) + 1;
             Initialize();
         }
         private void Initialize()
         {
-            Label labelWelcome = new Label("Welcome to social network.\nHere you can find posts for different topics, comment them or write your own discussion.")
+            Label labelWelcome = new Label("Welcome to social network \"BookFace\".\nHere you can find posts for different topics, comment them or write your own discussion.")
             {
                 X = Pos.Center(),
                 Y = Pos.Percent(30),
@@ -103,7 +103,6 @@ namespace ConsoleApplication
             Application.Top.Add(postList);
             Application.RequestStop();
             Application.Run();
-            
         }
 
         private void OnMyProfileClicked()
@@ -124,8 +123,12 @@ namespace ConsoleApplication
             if (logginedUser.isModerator)
             {
                 toModerator.Visible = true;
-                Application.Refresh();
             }
+            else
+            {
+                toModerator.Visible = false;
+            }
+            Application.Refresh();
         }
     }
 }

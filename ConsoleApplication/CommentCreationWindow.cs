@@ -72,6 +72,11 @@ namespace ConsoleApplication
 
         private void OnCreateNewCommentClicked()
         {
+            if (textView.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Error", "Comment should not be empty", "Ok");
+                return;
+            }
             Comment comment = new Comment()
             {
                 authorId = logginedUser.id,

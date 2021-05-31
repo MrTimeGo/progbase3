@@ -87,6 +87,16 @@ namespace ConsoleApplication
 
         private void OnCreateNewPostClicked()
         {
+            if (titleField.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Error", "Post title should be not empty", "Ok");
+                return;
+            }
+            if (plainTextView.Text.ToString() == "")
+            {
+                MessageBox.ErrorQuery("Error", "Post text should be not empty", "Ok");
+                return;
+            }
             Post post = new Post()
             {
                 authorId = loggedUser.id,

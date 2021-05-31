@@ -119,6 +119,7 @@ namespace ConsoleApplication
         private void OnTextChanging(TextChangingEventArgs obj)
         {
             searchKeyword = obj.NewText.ToString();
+            currentPage = 1;
             UpdateInfo();
         }
 

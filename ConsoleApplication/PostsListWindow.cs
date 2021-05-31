@@ -101,6 +101,7 @@ namespace ConsoleApplication
 
             searchField.TextChanging += OnTextChanging;
             page.OpenSelectedItem += OnSeclectedItem;
+            this.Enter += UpdateInfo;
 
             prevPage.Clicked += OnPrevPageClicked;
             nextPage.Clicked += OnNextPageClicked;
@@ -113,9 +114,15 @@ namespace ConsoleApplication
                 exit);
         }
 
+        private void UpdateInfo(FocusEventArgs obj)
+        {
+            UpdateInfo();
+        }
+
         private void OnTextChanging(TextChangingEventArgs obj)
         {
             searchKeyword = obj.NewText.ToString();
+            currentPage = 1;
             UpdateInfo();
         }
 

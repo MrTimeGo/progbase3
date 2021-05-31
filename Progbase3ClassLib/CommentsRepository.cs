@@ -218,5 +218,18 @@ namespace Progbase3ClassLib
             connection.Close();
             return null;
         }
+        public int GetCommentCountBasedOnTimeSpan(long postId, DateTime dateFrom, DateTime dateTo)
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = @"SELECT COUNT(*) FROM comments WHERE post_id = $post_id AND ($date_to > publish_time AND publish_time > $date_from)";
+            command.Parameters.AddWithValue("$post_id", postId);
+            command.Parameters.AddWithValue("$date_from", dateFrom.ToString("o"));
+            command.Parameters.AddWithValue("$date_to", dateTo.ToString("o"));
+
+            long count = (long)command.ExecuteScalar();
+            connection.Close();
+            return (int)count;
+        }
     }
 }
