@@ -91,32 +91,6 @@ namespace Progbase3ClassLib
             connection.Close();
             return nChanged;
         }
-        public List<Post> GetByUserId(long userId)
-        {
-            connection.Open();
-            SqliteCommand command = connection.CreateCommand();
-            command.CommandText = @"SELECT * FROM posts WHERE author_id = $author_id";
-            command.Parameters.AddWithValue("$author_id", userId);
-
-            SqliteDataReader reader = command.ExecuteReader();
-            List<Post> list = new List<Post>();
-            while(reader.Read())
-            {
-                Post post = new Post
-                {
-                    id = reader.GetInt64(0),
-                    authorId = userId,
-                    title = reader.GetString(2),
-                    text = reader.GetString(3),
-                    publishTime = reader.GetDateTime(4)
-                };
-
-                list.Add(post);
-            }
-            reader.Close();
-            connection.Close();
-            return list;
-        }
         public bool PostExists(string title)
         {
             connection.Open();
