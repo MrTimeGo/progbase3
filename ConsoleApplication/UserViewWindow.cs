@@ -8,14 +8,14 @@ namespace ConsoleApplication
     class UserViewWindow : Window
     {
         User user;
-        Service service;
+        RemoteService service;
         User loggedUser;
 
         TextField usernameField;
         TextField genderField;
         DateField birthDateField;
 
-        public UserViewWindow(long userId, Service service, User loggedUser)
+        public UserViewWindow(long userId, RemoteService service, User loggedUser)
         {
             this.user = service.usersRepo.GetById(userId);
             this.service = service;

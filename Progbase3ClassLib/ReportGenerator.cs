@@ -10,7 +10,7 @@ namespace Progbase3ClassLib
 {
     public static class ReportGenerator
     {
-        public static void GenerateNewReport(long postId, DateTime dateFrom, DateTime dateTo, Service service, string saveToPath)
+        public static void GenerateNewReport(long postId, DateTime dateFrom, DateTime dateTo, RemoteService service, string saveToPath)
         {
             DeleteOldReportIfExists(saveToPath);
             const string sampleFilePath = @"./../data/ReportSample.docx";
@@ -68,7 +68,7 @@ namespace Progbase3ClassLib
             public DateTime dateFrom;
             public DateTime dateTo;
         }
-        private static ReportInfo GetReportInfo(long postId, Service service, DateTime dateFrom, DateTime dateTo)
+        private static ReportInfo GetReportInfo(long postId, RemoteService service, DateTime dateFrom, DateTime dateTo)
         {
             Post post = service.postsRepo.GetById(postId);
             ReportInfo ri = new ReportInfo()
@@ -84,7 +84,7 @@ namespace Progbase3ClassLib
             };
             return ri;
         }
-        private static string GetUserThatWriteMostComments(long postId, Service service)
+        private static string GetUserThatWriteMostComments(long postId, RemoteService service)
         {
             List<Comment> comments = service.commentsRepo.GetByPostId(postId);
             if (comments.Count == 0)
@@ -122,7 +122,7 @@ namespace Progbase3ClassLib
             return max;
         }
 
-        private static void GenerateGraphics(ReportInfo reportInfo, Service service, string saveToPath)
+        private static void GenerateGraphics(ReportInfo reportInfo, RemoteService service, string saveToPath)
         {
             var plt = new Plot(800, 400);
             double[] xs = MakeXAxis();
@@ -145,7 +145,7 @@ namespace Progbase3ClassLib
             }
             return labels;
         }
-        private static double[] MakeYAxis(ReportInfo reportInfo, Service service)
+        private static double[] MakeYAxis(ReportInfo reportInfo, RemoteService service)
         {
             double[] ys = new double[40];
             TimeSpan scale = (reportInfo.dateTo - reportInfo.dateFrom) / 10;

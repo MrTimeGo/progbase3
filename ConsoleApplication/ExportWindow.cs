@@ -6,13 +6,13 @@ namespace ConsoleApplication
 {
     class ExportWindow : Window
     {
-        Service service;
+        RemoteService service;
 
         TextField postIdField;
         TextField directoryField;
         TextField fileNameField;
 
-        public ExportWindow(Service service)
+        public ExportWindow(RemoteService service)
         {
             this.service = service;
 

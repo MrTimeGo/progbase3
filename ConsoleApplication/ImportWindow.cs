@@ -6,10 +6,10 @@ namespace ConsoleApplication
 {
     class ImportWindow : Window
     {
-        Service service;
+        RemoteService service;
 
         TextField filePathField;
-        public ImportWindow(Service service)
+        public ImportWindow(RemoteService service)
         {
             this.service = service;
 

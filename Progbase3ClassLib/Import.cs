@@ -7,13 +7,13 @@ namespace Progbase3ClassLib
 {
     public class Import
     {
-        public static void Run(string filePath, Service service)
+        public static void Run(string filePath, RemoteService service)
         {
             ValidateFile(filePath);
             List<Comment> comments = GetComments(filePath);
             WriteToDataBase(service, comments);
         }
-        private static void WriteToDataBase(Service service, List<Comment> comments)
+        private static void WriteToDataBase(RemoteService service, List<Comment> comments)
         {
             foreach(Comment comment in comments)
             {

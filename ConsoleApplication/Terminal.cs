@@ -5,10 +5,10 @@ namespace ConsoleApplication
 {
     class Terminal
     {
-        static Service service;
-        public static void RunInterface(string databaseFilePath)
+        static RemoteService service;
+        public static void RunInterface()
         {
-            service = new Service(databaseFilePath);
+            service = new RemoteService();
 
 
             //Import.Run("./../../file.xml", service);

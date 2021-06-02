@@ -7,7 +7,7 @@ namespace ConsoleApplication
 { 
     class PostsListWindow : Window
     {
-        Service service;
+        RemoteService service;
         User loggedUser;
 
         int currentPage;
@@ -23,7 +23,7 @@ namespace ConsoleApplication
         TextField bottomPageCounter;
         Label bottomAllPage;
         Label pageNumber;
-        public PostsListWindow(long userId, Service service, User loggedUser)
+        public PostsListWindow(long userId, RemoteService service, User loggedUser)
         {
             this.service = service;
             this.loggedUser = loggedUser;

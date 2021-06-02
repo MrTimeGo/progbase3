@@ -6,7 +6,7 @@ namespace DataGenerator
     {
         static void Main()
         {
-            const string databaseFilePath = @"C:\Users\Artem\Desktop\KPI\progbase3\data\database.db";
+            const string databaseFilePath = @".\..\data\database.db";
             ConsoleInterface.Run(databaseFilePath);
         }
     }

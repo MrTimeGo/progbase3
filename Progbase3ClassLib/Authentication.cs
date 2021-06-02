@@ -6,9 +6,9 @@ namespace Progbase3ClassLib
 {
     public class Authentication
     {
-        Service service;
+        RemoteService service;
         SHA256 sha256Hash;
-        public Authentication(Service service)
+        public Authentication(RemoteService service)
         {
             this.service = service;
             sha256Hash = SHA256.Create();
@@ -31,7 +31,7 @@ namespace Progbase3ClassLib
                 throw new Exception("Invalid username or password");
             }
         }
-    private void CheckInDataBase(string username)
+        private void CheckInDataBase(string username)
         {
             if (!service.usersRepo.UserExists(username))
             {

@@ -7,14 +7,14 @@ namespace ConsoleApplication
     class CommentViewWindow : Window
     {
         Comment comment;
-        Service service;
+        RemoteService service;
         User loggedUser;
         User author;
 
         Label authorName;
         Label postPreview;
         Label text;
-        public CommentViewWindow(long commentId, Service service, User loggedUser)
+        public CommentViewWindow(long commentId, RemoteService service, User loggedUser)
         {
             this.comment = service.commentsRepo.GetById(commentId);
             this.service = service;

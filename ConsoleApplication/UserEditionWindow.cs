@@ -6,7 +6,7 @@ namespace ConsoleApplication
 {
     class UserEditionWindow : Window
     {
-        Service service;
+        RemoteService service;
 
         User user;
 
@@ -14,7 +14,7 @@ namespace ConsoleApplication
         DateField birthDateField;
         RadioGroup genderRadioGroup;
 
-        public UserEditionWindow(long userId, Service service)
+        public UserEditionWindow(long userId, RemoteService service)
         {
             this.service = service;
             this.user = service.usersRepo.GetById(userId);
@@ -63,7 +63,7 @@ namespace ConsoleApplication
             {
                 X = Pos.Left(usernameField),
                 Y = Pos.Top(labelGender),
-                SelectedItem = user.gender + 1 > 2 ? 0 : user.gender + 1
+                SelectedItem = user.gender == 0 ? 2 : user.gender - 1
             };
 
             Button passwordChange = new Button("Change password")

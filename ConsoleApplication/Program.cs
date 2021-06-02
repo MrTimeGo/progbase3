@@ -6,9 +6,15 @@ namespace ConsoleApplication
     {
         static void Main(string[] args)
         {
-            const string databaseFilePath = @"C:\Users\Artem\Desktop\KPI\progbase3\data\database.db";
-            //const string databaseFilePath = @".\..\data\database.db";
-            Terminal.RunInterface(databaseFilePath);
+            try
+            {
+                Terminal.RunInterface();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unhandled exception: {ex.Message}");
+                Console.WriteLine($"Disconected from a server");
+            }
         }
     }
 }

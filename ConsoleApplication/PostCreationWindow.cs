@@ -6,13 +6,13 @@ namespace ConsoleApplication
 {
     class PostCreationWindow : Window
     {
-        PostsRepository repository;
+        RemoteService service;
         User loggedUser;
 
         TextField titleField;
         TextView plainTextView;
 
-        public PostCreationWindow(Service service, User loggedUser)
+        public PostCreationWindow(RemoteService service, User loggedUser)
         {
             this.Title = "New post";
             this.X = Pos.Percent(20);
@@ -20,7 +20,7 @@ namespace ConsoleApplication
             this.Width = Dim.Percent(60);
             this.Height = Dim.Percent(60);
 
-            this.repository = service.postsRepo;
+            this.service = service;
             this.loggedUser = loggedUser;
             Initialize();
         }
@@ -104,7 +104,7 @@ namespace ConsoleApplication
                 text = plainTextView.Text.ToString(),
                 publishTime = DateTime.Now
             };
-            repository.Insert(post);
+            service.postsRepo.Insert(post);
 
             MessageBox.Query("Info", "Post was published", "Ok");
 

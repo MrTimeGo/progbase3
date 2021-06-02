@@ -6,12 +6,12 @@ namespace ConsoleApplication
 {
     class PostEditionWindow : Window
     {
-        Service service;
+        RemoteService service;
         Post post;
 
         TextField titleField;
         TextView plainTextView;
-        public PostEditionWindow(long postId, Service service)
+        public PostEditionWindow(long postId, RemoteService service)
         {
             this.Title = "Post edition";
             this.X = Pos.Percent(20);

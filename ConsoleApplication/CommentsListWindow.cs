@@ -7,7 +7,7 @@ namespace ConsoleApplication
 {
     class CommentsListWindow : Window
     {
-        Service service;
+        RemoteService service;
         User loggedUser;
 
         int currentPage;
@@ -25,7 +25,7 @@ namespace ConsoleApplication
         TextField bottomPageCounter;
         Label bottomAllPage;
         Label pageNumber;
-        public CommentsListWindow(bool isAuthor, long id, Service service, User loggedUser)
+        public CommentsListWindow(bool isAuthor, long id, RemoteService service, User loggedUser)
         {
             this.service = service;
             this.loggedUser = loggedUser;

@@ -6,12 +6,12 @@ namespace ConsoleApplication
 {
     class CommentEditionWindow : Window
     {
-        Service service;
+        RemoteService service;
         Comment comment;
 
         TextView textView;
 
-        public CommentEditionWindow(long commentId, Service service)
+        public CommentEditionWindow(long commentId, RemoteService service)
         {
             this.service = service;
             this.comment = service.commentsRepo.GetById(commentId);

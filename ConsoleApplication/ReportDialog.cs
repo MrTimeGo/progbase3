@@ -6,7 +6,7 @@ namespace ConsoleApplication
 {
     class ReportDialog : Dialog
     {
-        Service service;
+        RemoteService service;
 
         TextField postIdField;
         TextField pathTextField;
@@ -14,7 +14,7 @@ namespace ConsoleApplication
         TimeField timeFromField;
         DateField dateToField;
         TimeField timeToField;
-        public ReportDialog(Service service)
+        public ReportDialog(RemoteService service)
         {
             this.service = service;
 

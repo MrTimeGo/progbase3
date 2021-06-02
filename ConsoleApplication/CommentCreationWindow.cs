@@ -8,10 +8,10 @@ namespace ConsoleApplication
     {
         TextView textView;
 
-        CommentsRepository repository;
+        RemoteService service;
         User logginedUser;
         long postId;
-        public CommentCreationWindow(Service service, long postId, User logginedUser)
+        public CommentCreationWindow(RemoteService service, long postId, User logginedUser)
         {
             this.Title = "New Comment";
             this.X = Pos.Percent(20);
@@ -19,7 +19,7 @@ namespace ConsoleApplication
             this.Width = Dim.Percent(60);
             this.Height = Dim.Percent(60);
 
-            this.repository = service.commentsRepo;
+            this.service = service;
             this.postId = postId;
             this.logginedUser = logginedUser;
             Initialize();
@@ -84,7 +84,7 @@ namespace ConsoleApplication
                 text = textView.Text.ToString(),
                 publishTime = DateTime.Now
             };
-            repository.Insert(comment);
+            service.commentsRepo.Insert(comment);
 
             MessageBox.Query("Info", "Comment was added", "Ok");
 

@@ -8,7 +8,7 @@ namespace ConsoleApplication
     class PostViewWindow : Window
     {
         Post post;
-        Service service;
+        RemoteService service;
         User loggedUser;
         User author;
 
@@ -17,7 +17,7 @@ namespace ConsoleApplication
         Label titleLabel;
         Label pinnedCommentLabel;
         Label pinnedCommentPreview;
-        public PostViewWindow(long postId, Service service, User loggedUser)
+        public PostViewWindow(long postId, RemoteService service, User loggedUser)
         {
             this.post = service.postsRepo.GetById(postId);
             this.service = service;

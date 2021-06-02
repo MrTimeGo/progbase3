@@ -12,9 +12,9 @@ namespace ConsoleApplication
         DateField birthDate;
         RadioGroup genderRadioGroup;
 
-        Service service;
+        RemoteService service;
 
-        public UserCreationWindow(Service service)
+        public UserCreationWindow(RemoteService service)
         {
             //this.ColorScheme.Normal = Attribute.Make(Color.Blue, Color.Red);
             this.Title = "Registration";

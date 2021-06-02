@@ -7,11 +7,11 @@ namespace ConsoleApplication
     class LoginDialog : Dialog
     {
         public User loggedInUser;
-        Service service;
+        RemoteService service;
 
         TextField username;
         TextField password;
-        public LoginDialog(Service service)
+        public LoginDialog(RemoteService service)
         {
             this.Title = "Login";
             this.X = Pos.Center();

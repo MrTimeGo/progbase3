@@ -1,28 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
+using System.IO;
 
 namespace Progbase3ClassLib
 {
-    static class Serializer
+    public static class Serializer
     {
         public static Request DeserializeRequest(string xmlRequest)
         {
-            throw new NotImplementedException();
+            XmlSerializer ser = new XmlSerializer(typeof(Request));
+            StringReader reader = new StringReader(xmlRequest);
+            Request request = (Request)ser.Deserialize(reader);
+            reader.Close();
+            return request;
         }
         public static string SerializeRequest(Request request)
         {
-            throw new NotImplementedException();
+            XmlSerializer ser = new XmlSerializer(typeof(Request));
+            StringWriter writer = new StringWriter();
+            ser.Serialize(writer, request);
+            writer.Close();
+            return writer.ToString();
         }
         public static Response<T> DeserializeResponse<T>(string xmlResponse)
         {
-            throw new NotImplementedException();
+            XmlSerializer ser = new XmlSerializer(typeof(Response<T>));
+            StringReader reader = new StringReader(xmlResponse);
+            Response<T> response = (Response<T>)ser.Deserialize(reader);
+            reader.Close();
+            return response;
         }
         public static string SerializeResponse<T>(Response<T> response)
         {
-            throw new NotImplementedException();
+            XmlSerializer ser = new XmlSerializer(typeof(Response<T>));
+            StringWriter writer = new StringWriter();
+            ser.Serialize(writer, response);
+            writer.Close();
+            return writer.ToString();
         }
     }
 }

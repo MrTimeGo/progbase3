@@ -6,9 +6,9 @@ namespace ConsoleApplication
 {
     class PromotionDialog : Dialog
     {
-        Service service;
+        RemoteService service;
         TextField usernameField;
-        public PromotionDialog(Service service)
+        public PromotionDialog(RemoteService service)
         {
             this.service = service;
             Title = "Promotion dialog";

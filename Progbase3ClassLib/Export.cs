@@ -6,7 +6,7 @@ namespace Progbase3ClassLib
 {
     public static class Export
     {
-        public static void Run(string filePath, long postId, Service service)
+        public static void Run(string filePath, long postId, RemoteService service)
         {
             List<Comment> comments = GetCommentsFromPost(postId, service);
             WriteCommetsToFile(filePath, comments);
@@ -18,7 +18,7 @@ namespace Progbase3ClassLib
             ser.Serialize(sw, comments);
             sw.Close();
         }
-        private static List<Comment> GetCommentsFromPost(long postId, Service service)
+        private static List<Comment> GetCommentsFromPost(long postId, RemoteService service)
         {
             return service.commentsRepo.GetByPostId(postId);
         }

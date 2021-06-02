@@ -8,13 +8,13 @@ namespace ConsoleApplication
 {
     class MainWindow : Window
     {
-        Service service;
+        RemoteService service;
 
         Label logginedUserLabel;
         User logginedUser;
 
         Button toModerator;
-        public MainWindow(Service service, User logginedUser)
+        public MainWindow(RemoteService service, User logginedUser)
         {
             this.service = service;
             this.logginedUser = logginedUser;
