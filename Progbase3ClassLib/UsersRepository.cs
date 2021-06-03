@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 
-namespace Progbase3ClassLib
+namespace Storage
 {
     public class UsersRepository
     {

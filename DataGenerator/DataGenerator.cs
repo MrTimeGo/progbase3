@@ -3,7 +3,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 using Microsoft.Data.Sqlite;
-using Progbase3ClassLib;
+using Storage;
 
 namespace DataGenerator
 {

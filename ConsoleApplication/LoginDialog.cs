@@ -1,10 +1,10 @@
 ﻿using System;
-using Progbase3ClassLib;
+using Storage;
 using Terminal.Gui;
 using RPC;
 using Miscellaneous;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class LoginDialog : Dialog
     {

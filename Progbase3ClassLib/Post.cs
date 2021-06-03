@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Progbase3ClassLib
+namespace Storage
 {
     public class Post
     {

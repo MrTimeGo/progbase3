@@ -2,7 +2,7 @@
 using Microsoft.Data.Sqlite;
 using System.Collections.Generic;
 
-namespace Progbase3ClassLib
+namespace Storage
 {
     public class PostsRepository
     {

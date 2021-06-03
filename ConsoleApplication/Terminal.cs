@@ -1,9 +1,9 @@
-﻿using Progbase3ClassLib;
+﻿using Storage;
 using Terminal.Gui;
 using System;
 using RPC;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class Terminal
     {

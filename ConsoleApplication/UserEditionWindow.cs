@@ -1,10 +1,10 @@
 ﻿using System;
 using Terminal.Gui;
-using Progbase3ClassLib;
+using Storage;
 using RPC;
 using Miscellaneous;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class UserEditionWindow : Window
     {

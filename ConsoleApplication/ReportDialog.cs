@@ -3,7 +3,7 @@ using Terminal.Gui;
 using Miscellaneous;
 using RPC;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class ReportDialog : Dialog
     {

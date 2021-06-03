@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Terminal.Gui;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class ChangePasswordDialog : Dialog
     {

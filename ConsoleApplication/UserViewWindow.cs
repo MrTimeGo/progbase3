@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Terminal.Gui;
 using RPC;
-using Progbase3ClassLib;
+using Storage;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class UserViewWindow : Window
     {

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Progbase3ClassLib\Progbase3ClassLib.csproj" />
+    <ProjectReference Include="..\Progbase3ClassLib\Storage.csproj" />
   </ItemGroup>
 
   <ItemGroup>

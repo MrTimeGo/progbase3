@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml.Serialization;
 
-namespace Progbase3ClassLib
+namespace Storage
 {
     [XmlRoot("user")]
     public class User

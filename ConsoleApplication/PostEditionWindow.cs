@@ -1,9 +1,9 @@
 ﻿using System;
 using Terminal.Gui;
-using Progbase3ClassLib;
+using Storage;
 using RPC;
 
-namespace ConsoleApplication
+namespace DataManagement
 {
     class PostEditionWindow : Window
     {
