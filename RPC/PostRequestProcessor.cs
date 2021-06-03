@@ -5,9 +5,9 @@ using System.Text;
 using System.Net;
 using Progbase3ClassLib;
 
-namespace Server
+namespace RPC
 {
-    class PostRequestProcessor
+    public class PostRequestProcessor
     {
         Socket handler;
         Service service;

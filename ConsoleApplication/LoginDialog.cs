@@ -1,6 +1,8 @@
 ﻿using System;
 using Progbase3ClassLib;
 using Terminal.Gui;
+using RPC;
+using Miscellaneous;
 
 namespace ConsoleApplication
 {
@@ -88,6 +90,8 @@ namespace ConsoleApplication
             }
             catch (Exception ex)
             {
+                if (ex.Message == "Server error")
+                    throw;
                 MessageBox.ErrorQuery("Error", ex.Message, "Ok");
             }
         }

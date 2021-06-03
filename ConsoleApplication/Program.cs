@@ -6,14 +6,15 @@ namespace ConsoleApplication
     {
         static void Main(string[] args)
         {
+            Terminal gui = new Terminal();
             try
             {
-                Terminal.RunInterface();
+                gui.RunInterface();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Unhandled exception: {ex.Message}");
-                Console.WriteLine($"Disconected from a server");
+                Console.WriteLine($"Disconnected from a server");
             }
         }
     }

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using RPC;
+using Progbase3ClassLib;
 
-namespace Progbase3ClassLib
+namespace Miscellaneous
 {
     public class Authentication
     {
         RemoteService service;
-        SHA256 sha256Hash;
         public Authentication(RemoteService service)
         {
             this.service = service;
-            sha256Hash = SHA256.Create();
         }
         public User Login(string username, string rawPassword)
         {
@@ -62,8 +62,9 @@ namespace Progbase3ClassLib
         {
             service.usersRepo.Insert(user);
         }
-        private string GetHash(string password)
+        public static string GetHash(string password)
         {
+            SHA256 sha256Hash = SHA256.Create();
             byte[] data = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
             StringBuilder sb = new StringBuilder();
 

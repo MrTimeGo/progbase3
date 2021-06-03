@@ -14,7 +14,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Miscellaneous\Miscellaneous.csproj" />
     <ProjectReference Include="..\Progbase3ClassLib\Progbase3ClassLib.csproj" />
+    <ProjectReference Include="..\RPC\RPC.csproj" />
   </ItemGroup>
 
 </Project>

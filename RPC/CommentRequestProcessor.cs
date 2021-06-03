@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
-using System.Net;
 using Progbase3ClassLib;
 
-namespace Server
+namespace RPC
 {
-    class CommentRequestProcessor
+    public class CommentRequestProcessor
     {
         Socket handler;
         Service service;

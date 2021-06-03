@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Terminal.Gui;
+using RPC;
 using Progbase3ClassLib;
 
 namespace ConsoleApplication

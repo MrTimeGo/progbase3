@@ -1,13 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Progbase3ClassLib\Progbase3ClassLib.csproj" />
-    <ProjectReference Include="..\RPC\RPC.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Progbase3ClassLib
+namespace RPC
 {
     public class RemoteService
     {
         public RemoteUsersRepository usersRepo;
         public RemotePostsRepository postsRepo;
         public RemoteCommentsRepository commentsRepo;
-        public RemoteService()
+    
+        public bool TryConnect()
         {
             IPAddress ipAddress = IPAddress.Loopback;
             int port = 3000;
@@ -22,13 +23,14 @@ namespace Progbase3ClassLib
             {
                 sender.Connect(remoteEP);
             }
-            catch (Exception e)
+            catch
             {
-                Console.WriteLine("Unexpected exception : {0}", e.ToString());
+                return false;
             }
             usersRepo = new RemoteUsersRepository(sender);
             postsRepo = new RemotePostsRepository(sender);
             commentsRepo = new RemoteCommentsRepository(sender);
+            return true;
         }
     }
 }

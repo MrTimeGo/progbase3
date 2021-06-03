@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Text;
 using Progbase3ClassLib;
+using RPC;
 
 namespace Server
 {
@@ -67,17 +68,27 @@ namespace Server
 
                     Request request = Serializer.DeserializeRequest(xmlRequest);
                     Console.WriteLine($"Get request from {handler.RemoteEndPoint}: {request.methodName}");
-                    if (request.methodName.StartsWith("user."))
+                    try
                     {
-                        uProcessor.ProcessRequest(request);
+                        if (request.methodName.StartsWith("user."))
+                        {
+                            uProcessor.ProcessRequest(request);
+                        }
+                        else if (request.methodName.StartsWith("post."))
+                        {
+                            pProcessor.ProcessRequest(request);
+                        }
+                        else if (request.methodName.StartsWith("comment."))
+                        {
+                            cProcessor.ProcessRequest(request);
+                        }
                     }
-                    else if (request.methodName.StartsWith("post."))
+                    catch
                     {
-                        pProcessor.ProcessRequest(request);
-                    }
-                    else if (request.methodName.StartsWith("comment."))
-                    {
-                        cProcessor.ProcessRequest(request);
+                        Console.WriteLine("Error while connected to data base");
+                        handler.Disconnect(false);
+                        Console.WriteLine($"Client {handler.RemoteEndPoint} was disconected");
+                        break;
                     }
                 }
             }

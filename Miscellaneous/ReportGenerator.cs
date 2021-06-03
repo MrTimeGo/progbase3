@@ -5,8 +5,10 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 using ScottPlot;
 using System.IO;
+using RPC;
+using Progbase3ClassLib;
 
-namespace Progbase3ClassLib
+namespace Miscellaneous
 {
     public static class ReportGenerator
     {

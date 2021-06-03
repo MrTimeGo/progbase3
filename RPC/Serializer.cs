@@ -3,7 +3,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.IO;
 
-namespace Progbase3ClassLib
+namespace RPC
 {
     public static class Serializer
     {

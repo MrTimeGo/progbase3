@@ -12,6 +12,5 @@ namespace Server
             Server server = new Server(service);
             server.RunServer();
         }
-        
     }
 }

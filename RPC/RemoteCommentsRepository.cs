@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using Progbase3ClassLib;
 
-namespace Progbase3ClassLib
+namespace RPC
 {
     public class RemoteCommentsRepository
     {
@@ -170,10 +171,15 @@ namespace Progbase3ClassLib
             {
                 int bytesRec = sender.Receive(bytes);
                 xmlResponse += Encoding.UTF8.GetString(bytes, 0, bytesRec);
-                if (xmlResponse.IndexOf("</response>") > -1)
+                if (xmlResponse.IndexOf("</response>") > -1 || xmlResponse == "")
                 {
                     break;
                 }
+            }
+
+            if (xmlResponse == "")
+            {
+                throw new Exception("Server error");
             }
 
             Response<T> response = Serializer.DeserializeResponse<T>(xmlResponse);

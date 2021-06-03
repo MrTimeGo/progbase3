@@ -1,17 +1,23 @@
 ﻿using Progbase3ClassLib;
 using Terminal.Gui;
+using System;
+using RPC;
 
 namespace ConsoleApplication
 {
     class Terminal
     {
-        static RemoteService service;
-        public static void RunInterface()
-        {
+        RemoteService service;
+        public void RunInterface()
+        {  
             service = new RemoteService();
 
+            if (!service.TryConnect())
+            {
+                Console.WriteLine("Can't connect to the server");
+                return;
+            }
 
-            //Import.Run("./../../file.xml", service);
             Application.Init();
 
             MenuBar menu = new MenuBar(new MenuBarItem[] 
@@ -33,22 +39,22 @@ namespace ConsoleApplication
 
             Application.Run();
         }
-        private static void OnExit()
+        private void OnExit()
         {
             Application.Top.RemoveAll();
             Application.RequestStop();
         }
-        private static void OnImport()
+        private void OnImport()
         {
             Window importWindow = new ImportWindow(service);
             Application.Run(importWindow);
         }
-        private static void OnExport()
+        private void OnExport()
         {
             Window exportWindow = new ExportWindow(service);
             Application.Run(exportWindow);
         }
-        private static void OnGenerateReport()
+        private void OnGenerateReport()
         {
             ReportDialog reportDialog = new ReportDialog(service);
             Application.Run(reportDialog);

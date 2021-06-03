@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Xml.Serialization;
 
-namespace Progbase3ClassLib
+namespace RPC
 {
     [XmlRoot("request")]
     public class Request
