@@ -31,6 +31,10 @@ namespace DataManagement
                new MenuBarItem ("_Report", new MenuItem[]
                {
                    new MenuItem("_New report", "Generate new report", OnGenerateReport)
+               }),
+               new MenuBarItem("_Help", new MenuItem[]
+               {
+                   new MenuItem("_About", "Get information about program", OnAbout)
                })
             });
             MainWindow win = new MainWindow(service, null);
@@ -58,6 +62,18 @@ namespace DataManagement
         {
             ReportDialog reportDialog = new ReportDialog(service);
             Application.Run(reportDialog);
+        }
+        private void OnAbout()
+        {
+            //Dialog aboutDialog = new Dialog()
+            //{
+            //    X = Pos.Center(),
+            //    Y = Pos.Center(),
+            //    Width = Dim.Percent(50),
+            //    Height = Dim.Percent(50)
+            //};
+            //Label info
+            MessageBox.Query("About", "Social network \"BookFace\" by Artem Petselia, KP-01\nHere you can write, comment, discuss.", "Ok");
         }
     }
 }

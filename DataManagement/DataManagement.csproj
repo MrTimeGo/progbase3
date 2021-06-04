@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Miscellaneous\Miscellaneous.csproj" />
-    <ProjectReference Include="..\Progbase3ClassLib\Storage.csproj" />
+    <ProjectReference Include="..\Storage\Storage.csproj" />
     <ProjectReference Include="..\RPC\RPC.csproj" />
   </ItemGroup>
 

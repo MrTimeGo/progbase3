@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ArrayOfComment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Comment>
+    <id>1408</id>
+    <authorId>167</authorId>
+    <postId>13</postId>
+    <text>Are you plugged into the AC adapter in both cases? Your video card might go into a low-power mode when the laptop is unplugged from power. I'm not sure what else might change about the MacBook when you plug in the external monitor. At this point I'm wondering if there's some software setting that is turning the graphics card to full power when you plug in your external monitor, but I'm a Windows and Linux guy, not a Mac guy, sorry. My answers so far have applied to all computers in general but OSX problems are out of my scope...</text>
+    <publishTime>2006-06-05T00:00:00</publishTime>
+    <isPinned>false</isPinned>
+  </Comment>
+  <Comment>
+    <id>1759</id>
+    <authorId>423</authorId>
+    <postId>13</postId>
+    <text>no chance to tweak the game connection and reduce lags by changing cs-config files?</text>
+    <publishTime>2006-11-26T00:00:00</publishTime>
+  <Comment>
+    <id>1797</id>
+    <authorId>891</authorId>
+    <postId>13</postId>
+    <text>No offense but this game isn't even out yet, and in the beta there is no campaign mode...   how can this suggestion be anything but conjecture?</text>
+    <publishTime>2009-03-22T00:00:00</publishTime>
+    <isPinned>false</isPinned>
+  </Comment>
+</ArrayOfComment>

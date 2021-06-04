@@ -3,22 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataManagement", "ConsoleApplication\DataManagement.csproj", "{4EAD17BC-E925-45BD-AD58-6D9D76DB46DA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataManagement", "DataManagement\DataManagement.csproj", "{4EAD17BC-E925-45BD-AD58-6D9D76DB46DA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "Progbase3ClassLib\Storage.csproj", "{B8D1ED30-3AC9-4377-85D0-F4DBE194C804}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Storage", "Storage\Storage.csproj", "{B8D1ED30-3AC9-4377-85D0-F4DBE194C804}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataGenerator", "DataGenerator\DataGenerator.csproj", "{242662E5-FB90-4998-B5DC-B61BBE770BAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B92D3E8E-FD8E-4D37-BD42-D1AFD7C56570}"
-	ProjectSection(SolutionItems) = preProject
-		.editorconfig = .editorconfig
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csproj", "{C7745132-8226-4EDC-835E-30D5CC0F0DA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RPC", "RPC\RPC.csproj", "{80C722CD-F5D2-4667-B65A-5830A493AC57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RPC", "RPC\RPC.csproj", "{80C722CD-F5D2-4667-B65A-5830A493AC57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Miscellaneous", "Miscellaneous\Miscellaneous.csproj", "{3A2BB032-309E-41E8-A1E5-216B4A90C646}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Miscellaneous", "Miscellaneous\Miscellaneous.csproj", "{3A2BB032-309E-41E8-A1E5-216B4A90C646}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

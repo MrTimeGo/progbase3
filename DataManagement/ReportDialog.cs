@@ -58,14 +58,15 @@ namespace DataManagement
             Label timespanLabel = new Label("Time span:")
             {
                 X = Pos.Left(postidLabel),
-                Y = Pos.Bottom(postidLabel) + 1
+                Y = Pos.Bottom(postidLabel) + 1,
+
             };
             Label delimeterLabel = new Label("-")
             { 
                 X = Pos.Center(),
                 Y = Pos.Bottom(timespanLabel) + 1
             };
-            timeFromField = new TimeField()
+            timeFromField = new TimeField(TimeSpan.Zero)
             {
                 X = Pos.Left(delimeterLabel) - 8,
                 Y = Pos.Top(delimeterLabel)
@@ -80,7 +81,7 @@ namespace DataManagement
                 X = Pos.Right(delimeterLabel) + 1,
                 Y = Pos.Top(delimeterLabel)
             };
-            timeToField = new TimeField()
+            timeToField = new TimeField(TimeSpan.Zero)
             { 
                 X = Pos.Right(dateToField) + 1,
                 Y = Pos.Top(dateToField)

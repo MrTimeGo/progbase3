@@ -34,6 +34,8 @@ namespace DataManagement
             {
                 X = Pos.Center(),
                 Y = Pos.Bottom(labelWelcome) + 1,
+                Width = Dim.Fill(),
+                TextAlignment = TextAlignment.Centered
             };
             Button myProfile = new Button("My profile")
             { 

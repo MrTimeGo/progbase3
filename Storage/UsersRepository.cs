@@ -110,7 +110,7 @@ namespace Storage
 
             return result;
         }
-        public long GetCount()
+        private long GetCount()
         {
             connection.Open();
             SqliteCommand command = connection.CreateCommand();
