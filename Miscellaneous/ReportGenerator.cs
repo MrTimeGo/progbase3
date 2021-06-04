@@ -77,7 +77,7 @@ namespace Miscellaneous
             {
                 postId = postId,
                 title = post.title,
-                authorName = service.usersRepo.GetById(postId).username,
+                authorName = service.usersRepo.GetById(post.authorId).username,
                 text = post.text,
                 numberOfComments = service.commentsRepo.GetByPostId(postId).Count,
                 userName = GetUserThatWriteMostComments(postId, service),
